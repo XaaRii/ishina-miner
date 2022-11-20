@@ -51,11 +51,11 @@ module.exports = {
 					setTimeout(() => {
 						exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 5 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (err) return message.channel.send("Something fucked up, contact Pawele, he will help ya.");
-							if (stdout.contains("Loading data for")) {
+							if (stdout.includes("Loading data for")) {
 								embed.setDescription("Twitch miner started successfully.");
 								docs[0].tmrunning = true;
 							}
-							if (stdout.contains("You'll have to login to Twitch!")) {
+							if (stdout.includes("You'll have to login to Twitch!")) {
 								embed.setDescription("Twitch miner couldn't start - it requires login (maybe you changed your password?)");
 								exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 								docs[0].tmrunning = false; docs[0].tmpassworded = false;

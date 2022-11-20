@@ -55,7 +55,7 @@ module.exports = {
 								console.log("finalizing1 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 							}
-							if (stdout.contains("Enter Twitch password")) {
+							if (stdout.includes("Enter Twitch password")) {
 								// idk
 								docs[0].tmrunning = true; docs[0].tmpassworded = false;
 
@@ -65,7 +65,7 @@ module.exports = {
 								setTimeout(() => {
 									return finalizing2();
 								}, 1500);
-							} else if (stdout.contains("Loading data for")) {
+							} else if (stdout.includes("Loading data for")) {
 								// prefilled pw / cookies
 								docs[0].tmrunning = true; docs[0].tmpassworded = true;
 								return message.channel.send("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
@@ -83,16 +83,16 @@ module.exports = {
 						console.log("finalizing2 hardcopy -\n" + err);
 						return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 					}
-					if (stdout.contains("Console login unavailable")) {
+					if (stdout.includes("Console login unavailable")) {
 						docs[0].running = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Console login is currently unavailable. That means either twitch changed some shit on their side, or we are just getting ratelimited.\nIn case it is just a ratelimit, message Pawele. He will tell you how to generate the cookies file yourself.");
 					}
-					if (stdout.contains("Login Verification code required")) {
+					if (stdout.includes("Login Verification code required")) {
 						message.reply("Login Verification code (2FA) required! Check your email (or Auth app if you have That thing set up)\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
 						return finalizing3();
 					}
-					if (stdout.contains("Invalid username or password")) {
+					if (stdout.includes("Invalid username or password")) {
 						docs[0].running = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Invalid username or password. Please try again.");
@@ -131,11 +131,11 @@ module.exports = {
 								console.log("finalizing3 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 							}
-							if (stdout.contains("Invalid Login Verification code") || stdout.contains("Invalid two factor token")) {
+							if (stdout.includes("Invalid Login") || stdout.includes("Invalid two factor")) {
 								message.channel.send("Invalid 2FA verification code, please try again.");
 								return finalizing3();
 							}
-							if (stdout.contains("Loading data for")) {
+							if (stdout.includes("Loading data for")) {
 								docs[0].tmpassworded = true;
 								embed.setTitle(docs[0].tmusername + "'s miner")
 									.setFields([{
