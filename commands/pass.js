@@ -97,8 +97,6 @@ module.exports = {
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Invalid username or password. Please try again.");
 					}
-					console.log("I didn't find anything in this:\n" + stdout);
-					return message.reply("Something unexpected happened. Report to Pawele, he will look into it.");
 				});
 
 				function finalizing3() {
