@@ -206,7 +206,7 @@ async function execcall(msgchannel, cmd) {
 		} else if (stdout.length >= 1950) {
 			const atc = new Discord.AttachmentBuilder(Buffer.from(stdout), { name: 'rpicmd.txt' });
 			m.edit({ content: "Done! Here are the results:", files: [atc] });
-		} else m.edit({ content: "Done! Here are the results:\n" + stdout });
+		} else m.edit({ content: "Done! Here are the results:\n" + stdout + stderr });
 	});
 }
 
