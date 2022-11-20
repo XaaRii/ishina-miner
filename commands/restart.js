@@ -30,7 +30,7 @@ module.exports = {
 
 				function loopcheck() {
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log"`, function (e, o, oe) {
+						exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log"`, function (e, o, oe) {
 							if (e) {
 								// process stopped, yaay
 								docs[0].tmrunning = false;
@@ -72,7 +72,7 @@ module.exports = {
 
 					// i would like to wait and check here that it reads [Loading xx streamers...]
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n5 ~/temp/${authorid}.log`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 5 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (err) return message.channel.send("Something fucked up, contact Pawele, he will help ya.");
 							if (stdout.contains("Loading data for")) {
 								embed.setDescription("Twitch miner started successfully.");

@@ -47,15 +47,15 @@ module.exports = {
 				return finalizing();
 			}
 			function finalizing() {
-				exec(`sudo su -c 'screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py' ${whoami}`, function (err, stdout, stderr) {
-					console.log("executed");
+				exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`, function (err, stdout, stderr) {
+					if (err) console.log(err);
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n5 ~/temp/${authorid}.log`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 5 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (err) {
 								console.log("finalizing1 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 							}
-							if (stdout.contains("You'll have to login to Twitch!")) {
+							if (stdout.contains("Enter Twitch password")) {
 								// idk
 								docs[0].tmrunning = true; docs[0].tmpassworded = false;
 
@@ -78,7 +78,7 @@ module.exports = {
 				});
 			}
 			function finalizing2() {
-				exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n2 ~/temp.log`, function (err, stdout, stderr) {
+				exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 2 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 					if (err) {
 						console.log("finalizing2 hardcopy -\n" + err);
 						return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
@@ -97,6 +97,8 @@ module.exports = {
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Invalid username or password. Please try again.");
 					}
+					console.log("I didn't find anything in this:\n" + stdout);
+					return message.reply("Something unexpected happened. Report to Pawele, he will look into it.");
 				});
 
 				function finalizing3() {
@@ -106,7 +108,7 @@ module.exports = {
 					const collector = message.channel.createMessageCollector({ filter, time: 300000 });
 					collector.on('collect', m => {
 						if (m.startsWith("..twitch ")); // ignore
-						else if (isNaN(m)) message.channel.send("That is not a valid number");
+						else if (isNaN(m)) message.channel.send("That is not a valid number!");
 						else twoFA = m;
 						collector.stop();
 					});
@@ -124,7 +126,7 @@ module.exports = {
 
 				function waitcheck() {
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n4 ~/temp.log`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 4 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (err) {
 								console.log("finalizing3 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");

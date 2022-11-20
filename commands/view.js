@@ -17,7 +17,7 @@ module.exports = {
 			message.channel.sendTyping();
 			const authorid = docs[0].tmowner;
 
-			exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log"`, function (e, o, oe) {
+			exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log"`, function (e, o, oe) {
 				if (e) {
 					// process stopped
 					embed.setDescription("Twitch miner is not running.")
@@ -27,7 +27,7 @@ module.exports = {
 						.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 					return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 				} else {
-					exec(`tail -n10 ~/temp/${authorid}.log`, function (e, o, oe) {
+					exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (e, o, oe) {
 						if (e) return message.reply("Something fucked up, please report to Pawele.");
 						embed.setColor('e82e2e')
 							.setTitle(docs[0].tmusername + "'s miner")
