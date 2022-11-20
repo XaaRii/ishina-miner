@@ -1,0 +1,21 @@
+{
+  "name": "ishina-miner",
+  "version": "1.0.0",
+  "description": "Ishina's module - Miner manager",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "XaaRi",
+  "license": "ISC",
+  "dependencies": {
+    "console-stamp": "^3.0.6",
+    "discord.js": "^14.2.0",
+    "ms": "^2.1.3",
+    "nedb": "github:HalleyAssist/nedb",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.21.0"
+  }
+}

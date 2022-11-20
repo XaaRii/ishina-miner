@@ -1,0 +1,9 @@
+.cfg.json
+.eslintrc.json
+package-lock.json
+node_modules
+
+tmmachines.db
+tmvictimlist.db
+twitchminers/*
+!twitchminers/runDefault.py
