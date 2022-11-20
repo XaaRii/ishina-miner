@@ -32,7 +32,7 @@ const { inspect } = require('util');
 client.on('ready', () => {
 	console.info(`Logged in as ${client.user.tag}!`);
 	console.info(`I am a module [${config.moduleName}] with prefix ${config.prefix}`);
-	exec(`whoami`, function (error, stdout, stderr) { whoami = stdout.slice(0, -2); });
+	exec(`whoami`, function (error, stdout, stderr) { whoami = stdout.slice(0, -1); });
 	exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 		const runningTM = stdout.split("\n");
 		console.log(runningTM);
