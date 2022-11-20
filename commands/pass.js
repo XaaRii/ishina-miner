@@ -47,33 +47,35 @@ module.exports = {
 				return finalizing();
 			}
 			function finalizing() {
-				exec(`sudo su -c 'screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py' ${whoami}`);
-				setTimeout(() => {
-					exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n5 ~/temp/${authorid}.log`, function (err, stdout, stderr) {
-						if (err) {
-							console.log("finalizing1 hardcopy -\n" + err);
-							return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
-						}
-						if (stdout.contains("You'll have to login to Twitch!")) {
-							// idk
-							docs[0].tmrunning = true; docs[0].tmpassworded = false;
+				exec(`sudo su -c 'screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py' ${whoami}`, function (err, stdout, stderr) {
+					console.log("executed");
+					setTimeout(() => {
+						exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n5 ~/temp/${authorid}.log`, function (err, stdout, stderr) {
+							if (err) {
+								console.log("finalizing1 hardcopy -\n" + err);
+								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
+							}
+							if (stdout.contains("You'll have to login to Twitch!")) {
+								// idk
+								docs[0].tmrunning = true; docs[0].tmpassworded = false;
 
-							// insert password
-							exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"');
-							message.channel.sendTyping();
-							setTimeout(() => {
-								return finalizing2();
-							}, 1500);
-						} else if (stdout.contains("Loading data for")) {
-							// prefilled pw / cookies
-							docs[0].tmrunning = true; docs[0].tmpassworded = true;
-							return message.channel.send("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
-						} else {
-							console.log("How did we get here? -\n" + stdout);
-							return message.reply("How did we get here? Something must be broken, report this to Pawele. *(Although I'm not entirely sure if he'll be able to help)*");
-						}
-					});
-				}, 1500);
+								// insert password
+								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"');
+								message.channel.sendTyping();
+								setTimeout(() => {
+									return finalizing2();
+								}, 1500);
+							} else if (stdout.contains("Loading data for")) {
+								// prefilled pw / cookies
+								docs[0].tmrunning = true; docs[0].tmpassworded = true;
+								return message.channel.send("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
+							} else {
+								console.log("How did we get here? -\n" + stdout);
+								return message.reply("How did we get here? Something must be broken, report this to Pawele. *(Although I'm not entirely sure if he'll be able to help)*");
+							}
+						});
+					}, 1500);
+				});
 			}
 			function finalizing2() {
 				exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log" && sleep 1 && tail -n2 ~/temp.log`, function (err, stdout, stderr) {
@@ -103,7 +105,7 @@ module.exports = {
 					const filter = m => m.author.id === authorid;
 					const collector = message.channel.createMessageCollector({ filter, time: 300000 });
 					collector.on('collect', m => {
-						if (m.startsWith("..twitch ")) ; // ignore
+						if (m.startsWith("..twitch ")); // ignore
 						else if (isNaN(m)) message.channel.send("That is not a valid number");
 						else twoFA = m;
 						collector.stop();
