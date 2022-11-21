@@ -4,6 +4,7 @@ package-lock.json
 node_modules
 
 primecheck/chromedriver
+primecheck/__pycache__
 
 tmmachines.db
 tmvictimlist.db
