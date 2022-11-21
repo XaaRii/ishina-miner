@@ -98,8 +98,9 @@ module.exports = {
 					console.info("prompted a hardcopy:");
 					if (stdout) console.log(stdout);
 					if (err) {
-						console.log("finalizing2 hardcopy -\n" + err);
-						return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
+						docs[0].tmrunning = false;
+						console.log("finalizing2 hardcopy -\n" + err + stdout);
+						return message.channel.send("Something fucked up, but it's probably just twitch ratelimiting us. If that's the case, you should try after 24 hours.\nIf that's not the case, you can always contact Pawele, and he will look into it.");
 					}
 					console.info("past err");
 					if (stdout.includes("Console login unavailable")) {
