@@ -19,7 +19,8 @@ module.exports = {
 			// [ bundle name, game name, time, url ]
 			if (e[0] !== "Undetectable" && e[1] === "Undetectable") e[1] = "Free to claim game";
 			if (e[3] === "Link Undetectable") {
-				embed.addFields({ name: e[0], value: `${e[1]}\nExpires in${e[2]})`, inline: false });
+				// just skip this for now
+				// embed.addFields({ name: e[0], value: `${e[1]}\nExpires in${e[2]})`, inline: false });
 			} else embed.addFields({ name: e[0], value: `${e[1]}\nExpires in${e[2]}\n[offer link](${e[3]})`, inline: false });
 		}
 		embed.setTitle("Current Twitch Prime offers:")
