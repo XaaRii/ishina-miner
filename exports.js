@@ -31,9 +31,7 @@ const client = new Client({
 const Datastore = require('nedb');
 const db1 = new Datastore({ filename: './tmmachines.db', autoload: true });
 const db2 = new Datastore({ filename: './tmvictimlist.db', autoload: true });
-var user = "";
 
 exports.client = client;
 exports.tmmachines = db1;
 exports.tmvictimlist = db2;
-exports.whoami = user;

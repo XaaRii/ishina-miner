@@ -1,6 +1,6 @@
 const config = require("../.cfg.json");
-var prefix = config.prefix;
-var { tmmachines, tmvictimlist, whoami } = require('../exports.js');
+const prefix = config.prefix;
+var { tmmachines, tmvictimlist } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs'); const ms = require('ms');
 const { exec } = require('child_process');
@@ -44,28 +44,39 @@ module.exports = {
 				oldFile = oldFile.split("twitch_miner.mine");
 
 				fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
+				console.info("run.py file built successfully.");
 				return finalizing();
 			}
 			function finalizing() {
+				console.info("started finalizing");
 				exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`, function (err, stdout, stderr) {
+					console.info("started a new screen");
 					if (err) console.log(err);
 					setTimeout(() => {
+						console.info("timeout callback starts");
 						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 5 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+							console.info("prompted a hardcopy:");
+							if (stdout) console.log(stdout);
 							if (err) {
 								console.log("finalizing1 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 							}
+							console.info("no errors so far");
 							if (stdout.includes("Enter Twitch password")) {
-								// idk
+								console.info("stdout.includes Enter Twitch password");
 								docs[0].tmrunning = true; docs[0].tmpassworded = false;
 
 								// insert password
-								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"');
-								message.channel.sendTyping();
-								setTimeout(() => {
-									return finalizing2();
-								}, 1500);
+								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"', function(ee, sout, serr) {
+									console.info("injecting password");
+									message.channel.sendTyping();
+									setTimeout(() => {
+										console.info("going to finalizing2");
+										return finalizing2();
+									}, 1500);
+								});
 							} else if (stdout.includes("Loading data for")) {
+								console.info("stdout.includes Loading data for");
 								// prefilled pw / cookies
 								docs[0].tmrunning = true; docs[0].tmpassworded = true;
 								return message.channel.send("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
@@ -78,21 +89,29 @@ module.exports = {
 				});
 			}
 			function finalizing2() {
+				console.info("started finalizing2");
 				exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 2 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+					console.info("prompted a hardcopy:");
+					if (stdout) console.log(stdout);
 					if (err) {
 						console.log("finalizing2 hardcopy -\n" + err);
 						return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 					}
+					console.info("past err");
 					if (stdout.includes("Console login unavailable")) {
+						console.info("stdout.includes Console login unavailable");
 						docs[0].running = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Console login is currently unavailable. That means either twitch changed some shit on their side, or we are just getting ratelimited.\nIn case it is just a ratelimit, message Pawele. He will tell you how to generate the cookies file yourself.");
 					}
 					if (stdout.includes("Login Verification code required")) {
+						console.info("stdout.includes Login Verification code required");
 						message.reply("Login Verification code (2FA) required! Check your email (or Auth app if you have That thing set up)\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
+						console.info("going to finalizing3");
 						return finalizing3();
 					}
 					if (stdout.includes("Invalid username or password")) {
+						console.info("stdout.includes Invalid username or password");
 						docs[0].running = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Invalid username or password. Please try again.");
@@ -100,11 +119,13 @@ module.exports = {
 				});
 
 				function finalizing3() {
+					console.info("started finalizing3");
 					// 2FA thing listener
 					var twoFA = "";
 					const filter = m => m.author.id === authorid;
 					const collector = message.channel.createMessageCollector({ filter, time: 300000 });
 					collector.on('collect', m => {
+						console.info("collect triggered");
 						if (m.startsWith("..twitch ")); // ignore
 						else if (isNaN(m)) message.channel.send("That is not a valid number!");
 						else twoFA = m;
@@ -112,6 +133,7 @@ module.exports = {
 					});
 
 					collector.on('end', c => {
+						console.info("collect end triggered");
 						if (twoFA === "") {
 							docs[0].running = false;
 							exec("screen -S tm-" + authorid + " -X stuff $'\003'");
@@ -123,6 +145,7 @@ module.exports = {
 				}
 
 				function waitcheck() {
+					console.info("waitcheck");
 					setTimeout(() => {
 						exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 4 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (err) {

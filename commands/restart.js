@@ -1,6 +1,6 @@
 const config = require("../.cfg.json");
 var prefix = config.prefix;
-var { tmmachines, tmvictimlist, whoami } = require('../exports.js');
+var { tmmachines, tmvictimlist } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -68,7 +68,7 @@ module.exports = {
 				}
 				function finalizing() {
 					// start it lol
-					exec(`sudo su -c 'screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py' ${whoami}`);
+					exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`);
 
 					// i would like to wait and check here that it reads [Loading xx streamers...]
 					setTimeout(() => {

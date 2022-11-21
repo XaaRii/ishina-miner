@@ -5,8 +5,9 @@ const { REST, Routes } = require('discord.js');
 const { client } = require('./exports.js');
 const fs = require("fs"), ms = require('ms');
 const config = require('./.cfg.json');
-var { tmmachines, tmvictimlist, whoami } = require('./exports.js');
+var { tmmachines, tmvictimlist } = require('./exports.js');
 var prefix = config.prefix;
+var temp1, temp2, temp3;
 
 // Commands init
 client.commands = new Discord.Collection();
@@ -32,7 +33,6 @@ const { inspect } = require('util');
 client.on('ready', () => {
 	console.info(`Logged in as ${client.user.tag}!`);
 	console.info(`I am a module [${config.moduleName}] with prefix ${config.prefix}`);
-	exec(`whoami`, function (error, stdout, stderr) { whoami = stdout.slice(0, -1); });
 	exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 		const runningTM = stdout.split("\n");
 		console.log(runningTM);
@@ -40,7 +40,7 @@ client.on('ready', () => {
 			for (let i = 0; i < docs.length; i++) {
 				if (!runningTM.includes(docs.tmowner) && docs.running) {
 					// start it lol
-					exec(`sudo su -c 'screen -S tm-${docs.tmowner} -d -m python ./twitchminers/run${docs.tmowner}.py' ${whoami}`);
+					exec(`screen -S tm-${docs.tmowner} -d -m python ./twitchminers/run${docs.tmowner}.py`);
 					console.log(`Fixed ${docs.tmowner} - run state set to ${docs.running}`);
 				}
 				if (runningTM.includes(docs.tmowner) && !docs.running) {
