@@ -45,9 +45,9 @@ module.exports = {
 
 				fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
 				console.info("run.py file built successfully.");
-				return finalizing();
+				return finalizing(docs);
 			}
-			function finalizing() {
+			function finalizing(docs) {
 				console.info("started finalizing");
 				exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`, function (err, stdout, stderr) {
 					console.info("started a new screen");
@@ -74,7 +74,7 @@ module.exports = {
 									message.channel.sendTyping();
 									setTimeout(() => {
 										console.info("going to finalizing2");
-										return finalizing2();
+										return finalizing2(docs);
 									}, 1500);
 								});
 							} else if (stdout.includes("Loading data for")) {
@@ -92,7 +92,7 @@ module.exports = {
 					}, 1500);
 				});
 			}
-			function finalizing2() {
+			function finalizing2(docs) {
 				console.info("started finalizing2");
 				exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 2 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 					console.info("prompted a hardcopy:");
@@ -113,7 +113,7 @@ module.exports = {
 						console.info("stdout.includes Two factor authentication");
 						message.reply("Two factor authentication (2FA) code required! You can find it in your 2FA Auth app.\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
 						console.info("going to finalizing3");
-						return finalizing3();
+						return finalizing3(docs);
 					}
 					if (stdout.includes("Please enter the 6-digit")) {
 						console.info("stdout.includes Email Verification code required");
@@ -122,7 +122,7 @@ module.exports = {
 						const emailcens = prepEmail[0].replace("Please enter the 6-digit code sent to ", "");
 						message.reply("Login Verification code required! Please enter the 6-digit code sent to " + emailcens + "\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
 						console.info("going to finalizing3");
-						return finalizing3();
+						return finalizing3(docs);
 					}
 					if (stdout.includes("Invalid username or password")) {
 						console.info("stdout.includes Invalid username or password");
@@ -133,7 +133,7 @@ module.exports = {
 					}
 				});
 
-				function finalizing3() {
+				function finalizing3(docs) {
 					console.info("started finalizing3");
 					// 2FA thing listener
 					var twoFA = "";
@@ -156,11 +156,11 @@ module.exports = {
 							return message.channel.send("No valid 2FA verification code provided for the past 5 minutes, exiting...");
 						}
 						exec('screen -S tm-' + authorid + ' -X stuff "' + twoFA + '\015"');
-						return waitcheck();
+						return waitcheck(docs);
 					});
 				}
 
-				function waitcheck() {
+				function waitcheck(docs) {
 					console.info("waitcheck");
 					setTimeout(() => {
 						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 4 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
@@ -170,7 +170,7 @@ module.exports = {
 							}
 							if (stdout.includes("Invalid Login") || stdout.includes("Invalid two factor")) {
 								message.channel.send("Invalid 2FA verification code, please try again.");
-								return finalizing3();
+								return finalizing3(docs);
 							}
 							if (stdout.includes("Loading data for")) {
 								docs[0].tmpassworded = true;
