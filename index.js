@@ -38,15 +38,15 @@ client.on('ready', () => {
 		console.log(runningTM);
 		tmmachines.find({}, function (err, docs) {
 			for (let i = 0; i < docs.length; i++) {
-				if (!runningTM.includes(docs.tmowner) && docs.running) {
+				if (!runningTM.includes(docs.tmowner) && docs[i].running) {
 					// start it lol
-					exec(`screen -S tm-${docs.tmowner} -d -m python ./twitchminers/run${docs.tmowner}.py`);
-					console.log(`Fixed ${docs.tmowner} - run state set to ${docs.running}`);
+					exec(`screen -S tm-${docs[i].tmowner} -d -m python ./twitchminers/run${docs[i].tmowner}.py`);
+					console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
 				}
-				if (runningTM.includes(docs.tmowner) && !docs.running) {
+				if (runningTM.includes(docs.tmowner) && !docs[i].running) {
 					// end it lol
-					exec("screen -S tm-" + docs.tmowner + " -X stuff $'\003'");
-					console.log(`Fixed ${docs.tmowner} - run state set to ${docs.running}`);
+					exec("screen -S tm-" + docs[i].tmowner + " -X stuff $'\003'");
+					console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
 				}
 			}
 		});

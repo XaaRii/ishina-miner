@@ -25,7 +25,7 @@ module.exports = {
 
 				function loopcheck() {
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "~/temp/${authorid}.log"`, function (e, o, oe) {
+						exec(`screen -S tm-${authorid} -X hardcopy "./temp/${authorid}.log"`, function (e, o, oe) {
 							if (e) {
 								// process stopped, yaay
 								embed.setDescription("Twitch miner closed successfully.")

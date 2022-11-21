@@ -17,7 +17,7 @@ module.exports = {
 			message.channel.sendTyping();
 			const authorid = docs[0].tmowner;
 
-			exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log"`, function (e, o, oe) {
+			exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log"`, function (e, o, oe) {
 				if (e) {
 					// process stopped
 					embed.setDescription("Twitch miner is not running.")

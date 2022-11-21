@@ -20,7 +20,7 @@ module.exports = {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (docs[0].tmpassworded) return message.reply("You don't have to fill in the password again. It was already accepted.");
 			if (!args[0]) return message.reply("If you won't pass me any password, i can't log in!");
-			if (docs[0].tmrunning) return message.reply("Please do not use this command, just type the numbers alone."); // idk may change
+			if (docs[0].tmrunning) return message.reply("Please do not use this command, just type the numbers alone.");
 
 			message.channel.sendTyping();
 			const authorid = docs[0].tmowner;
@@ -90,7 +90,7 @@ module.exports = {
 			}
 			function finalizing2() {
 				console.info("started finalizing2");
-				exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 2 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+				exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 2 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 					console.info("prompted a hardcopy:");
 					if (stdout) console.log(stdout);
 					if (err) {
@@ -100,7 +100,7 @@ module.exports = {
 					console.info("past err");
 					if (stdout.includes("Console login unavailable")) {
 						console.info("stdout.includes Console login unavailable");
-						docs[0].running = false;
+						docs[0].tmrunning = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Console login is currently unavailable. That means either twitch changed some shit on their side, or we are just getting ratelimited.\nIn case it is just a ratelimit, message Pawele. He will tell you how to generate the cookies file yourself.");
 					}
@@ -112,7 +112,7 @@ module.exports = {
 					}
 					if (stdout.includes("Invalid username or password")) {
 						console.info("stdout.includes Invalid username or password");
-						docs[0].running = false;
+						docs[0].tmrunning = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Invalid username or password. Please try again.");
 					}
@@ -135,7 +135,7 @@ module.exports = {
 					collector.on('end', c => {
 						console.info("collect end triggered");
 						if (twoFA === "") {
-							docs[0].running = false;
+							docs[0].tmrunning = false;
 							exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 							return message.channel.send("No valid 2FA verification code provided for the past 5 minutes, exiting...");
 						}
@@ -147,7 +147,7 @@ module.exports = {
 				function waitcheck() {
 					console.info("waitcheck");
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "~/twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 4 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 4 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (err) {
 								console.log("finalizing3 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
