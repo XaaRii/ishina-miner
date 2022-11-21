@@ -64,7 +64,9 @@ module.exports = {
 							console.info("no errors so far");
 							if (stdout.includes("Enter Twitch password")) {
 								console.info("stdout.includes Enter Twitch password");
-								docs[0].tmrunning = true; docs[0].tmpassworded = false;
+								docs[0].tmrunning = true;
+								console.info(docs[0].tmrunning);
+								docs[0].tmpassworded = false;
 
 								// insert password
 								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"', function(ee, sout, serr) {
@@ -78,7 +80,9 @@ module.exports = {
 							} else if (stdout.includes("Loading data for")) {
 								console.info("stdout.includes Loading data for");
 								// prefilled pw / cookies
-								docs[0].tmrunning = true; docs[0].tmpassworded = true;
+								docs[0].tmrunning = true;
+								console.info(docs[0].tmrunning);
+								docs[0].tmpassworded = true;
 								return message.channel.send("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
 							} else {
 								console.log("How did we get here? -\n" + stdout);
@@ -104,15 +108,25 @@ module.exports = {
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Console login is currently unavailable. That means either twitch changed some shit on their side, or we are just getting ratelimited.\nIn case it is just a ratelimit, message Pawele. He will tell you how to generate the cookies file yourself.");
 					}
-					if (stdout.includes("Login Verification code required")) {
-						console.info("stdout.includes Login Verification code required");
-						message.reply("Login Verification code (2FA) required! Check your email (or Auth app if you have That thing set up)\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
+					if (stdout.includes("2FA token:")) {
+						console.info("stdout.includes Two factor authentication");
+						message.reply("Two factor authentication (2FA) code required! You can find it in your 2FA Auth app.\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
+						console.info("going to finalizing3");
+						return finalizing3();
+					}
+					if (stdout.includes("Please enter the 6-digit")) {
+						console.info("stdout.includes Email Verification code required");
+						// Please enter the 6-digit code sent to g****@s***.cz:
+						const prepEmail = stdout.split(":");
+						const emailcens = prepEmail[0].replace("Please enter the 6-digit code sent to ", "");
+						message.reply("Login Verification code required! Please enter the 6-digit code sent to " + emailcens + "\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
 						console.info("going to finalizing3");
 						return finalizing3();
 					}
 					if (stdout.includes("Invalid username or password")) {
 						console.info("stdout.includes Invalid username or password");
 						docs[0].tmrunning = false;
+						console.info(docs[0].tmrunning);
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Invalid username or password. Please try again.");
 					}
@@ -136,6 +150,7 @@ module.exports = {
 						console.info("collect end triggered");
 						if (twoFA === "") {
 							docs[0].tmrunning = false;
+							console.info(docs[0].tmrunning);
 							exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 							return message.channel.send("No valid 2FA verification code provided for the past 5 minutes, exiting...");
 						}
