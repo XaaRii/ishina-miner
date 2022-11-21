@@ -3,6 +3,8 @@
 package-lock.json
 node_modules
 
+primecheck/chromedriver
+
 tmmachines.db
 tmvictimlist.db
 twitchminers/*
