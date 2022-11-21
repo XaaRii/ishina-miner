@@ -38,7 +38,7 @@ client.on('ready', () => {
 		console.log(runningTM);
 		tmmachines.find({}, function (err, docs) {
 			for (let i = 0; i < docs.length; i++) {
-				if (!runningTM.includes(docs.tmowner) && docs[i].running) {
+				if (!runningTM.includes(docs[i].tmowner) && docs[i].running) {
 					// start it lol
 					exec(`screen -S tm-${docs[i].tmowner} -d -m python ./twitchminers/run${docs[i].tmowner}.py`);
 					console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
