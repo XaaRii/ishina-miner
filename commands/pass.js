@@ -157,7 +157,7 @@ module.exports = {
 						console.info("collect triggered");
 						if (m.content.startsWith("..twitch ")); // ignore
 						else if (isNaN(m)) message.channel.send("That is not a valid number!");
-						else twoFA = m;
+						else twoFA = m.content;
 						collector.stop();
 					});
 
