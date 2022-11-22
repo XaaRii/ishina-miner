@@ -25,11 +25,19 @@ module.exports = {
 			message.channel.sendTyping();
 			const authorid = docs[0].tmowner;
 
-			// rebuild the runPy
-			var victlist = ['twitch_miner.mine(', '    ['];
-			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
-				return runFileBuild(victlist, 0, d);
-			});
+			if (message.attachments.first()) {
+				const request = require(`request`);
+				request.get(message.attachments.first().url)
+					.on('error', function (error) { return message.channel.send("ᴇʀʀᴏʀ: " + error); })
+					.pipe(fs.createWriteStream('./twitchminers/cookies/' + docs[0].tmusername));
+				return message.channel.send("File downloaded, now you can start your miner with " + prefix + "start");
+			} else {
+				// rebuild the runPy
+				var victlist = ['twitch_miner.mine(', '    ['];
+				tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
+					return runFileBuild(victlist, 0, d);
+				});
+			}
 
 			function runFileBuild(victlist, n, d) {
 				if (n < d.length) {
@@ -69,7 +77,7 @@ module.exports = {
 								docs[0].tmpassworded = false;
 
 								// insert password
-								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"', function(ee, sout, serr) {
+								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"', function (ee, sout, serr) {
 									console.info("injecting password");
 									message.channel.sendTyping();
 									setTimeout(() => {
@@ -94,7 +102,7 @@ module.exports = {
 			}
 			function finalizing2(docs) {
 				console.info("started finalizing2");
-				exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 2 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+				exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 8 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 					console.info("prompted a hardcopy:");
 					if (stdout) console.log(stdout);
 					if (err) {
@@ -105,6 +113,12 @@ module.exports = {
 					console.info("past err");
 					if (stdout.includes("Console login unavailable")) {
 						console.info("stdout.includes Console login unavailable");
+						if (stdout.includes("Use a VPN or wait")) {
+							fs.unlink('./twitchminers/cookies/' + docs[0].tmusername + '.pkl', () => true);
+							docs[0].tmrunning = false;
+							exec("screen -S tm-" + authorid + " -X stuff $'\003'");
+							return message.reply("Seems like we're getting rate-limited.\nEither wait some time and try again, or message Pawele and he will tell you how to generate the cookies file yourself.");
+						}
 						docs[0].tmrunning = false;
 						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 						return message.reply("Console login is currently unavailable. That means either twitch changed some shit on their side, or we are just getting ratelimited.\nIn case it is just a ratelimit, message Pawele. He will tell you how to generate the cookies file yourself.");
