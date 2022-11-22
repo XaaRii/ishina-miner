@@ -21,7 +21,7 @@ module.exports = {
 			if (e[3] === "Link Undetectable") {
 				// just skip this for now
 				// embed.addFields({ name: e[0], value: `${e[1]}\nExpires in${e[2]})`, inline: false });
-			} else embed.addFields({ name: e[0], value: `${e[1]}\nExpires in${e[2]}\n[offer link](${e[3]})`, inline: false });
+			} else embed.addFields({ name: e[0], value: `${e[1]}\nExpires in${e[2]}\n[offer link](${e[3]})`, inline: true });
 		}
 		embed.setTitle("Current Twitch Prime offers:")
 			.setColor("ffca2b")
