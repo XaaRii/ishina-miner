@@ -155,7 +155,7 @@ module.exports = {
 					const collector = message.channel.createMessageCollector({ filter, time: 300000 });
 					collector.on('collect', m => {
 						console.info("collect triggered");
-						if (m.startsWith("..twitch ")); // ignore
+						if (m.content.startsWith("..twitch ")); // ignore
 						else if (isNaN(m)) message.channel.send("That is not a valid number!");
 						else twoFA = m;
 						collector.stop();
