@@ -14,11 +14,12 @@ module.exports = {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("What streamers you wanna add?");
 
-			var newlyJoined = [], currlist = [], comment = "";
+			var newlyJoined = [], currlist = [], comment = "", argslist = args.split("\n").trim();
 
-			if (args[0].startsWith("#")) {
+			if (argslist[0].startsWith("#")) {
 				if (!args[1]) return message.reply("What streamers you wanna add under this comment?");
-				comment = args[0].substring(1);
+				comment = argslist[0].substring(1);
+				argslist.slice(1);
 			}
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
@@ -34,25 +35,25 @@ module.exports = {
 			}
 
 			function runAddNames(n) {
-				if (n < args.length) {
-					if (currlist.includes(args[n].toLowerCase())) {
-						tmvictimlist.find({ tmusername: docs[0].tmusername, tmvictim: args[n].toLowerCase() }, function (err, doc) {
+				if (n < argslist.length) {
+					if (currlist.includes(argslist[n].toLowerCase())) {
+						tmvictimlist.find({ tmusername: docs[0].tmusername, tmvictim: argslist[n].toLowerCase() }, function (err, doc) {
 							if (doc.tmcomment === comment) return runAddNames((n + 1));
-							tmvictimlist.update({ tmusername: docs[0].tmusername, tmvictim: args[n].toLowerCase() }, { $set: { tmcomment: comment } }, {}, function(err, nou) {
-								newlyJoined.push(args[n] + " (comment updated)");
+							tmvictimlist.update({ tmusername: docs[0].tmusername, tmvictim: argslist[n].toLowerCase() }, { $set: { tmcomment: comment } }, {}, function(err, nou) {
+								newlyJoined.push(argslist[n] + " (comment updated)");
 								return runAddNames((n + 1));
 							});
 						});
 					}
-					newlyJoined.push(args[n]);
+					newlyJoined.push(argslist[n]);
 
 					tmvictimlist.insert({
 						"tmusername": docs[0].tmusername,
-						"tmvictim": args[n].toLowerCase(),
+						"tmvictim": argslist[n].toLowerCase(),
 						"tmcomment": comment,
 					}, function (err) { if (err) return message.channel.send("Error happened!", err); });
 
-					currlist.push(args[n].toLowerCase());
+					currlist.push(argslist[n].toLowerCase());
 					return runAddNames((n + 1));
 				}
 
