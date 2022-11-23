@@ -15,7 +15,8 @@ module.exports = {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("What streamers you wanna add?");
 
-			var newlyJoined = [], currlist = [], comment = "", argslist = args.join(" ").split("\n").trim();
+			var newlyJoined = [], currlist = [], comment = "", argslist = args;
+			argslist = argslist.join(" ").split("\n");
 			console.log(argslist);
 			if (argslist[0].startsWith("#")) {
 				if (!argslist[1]) return message.reply("What streamers you wanna add under this comment?");
@@ -58,7 +59,7 @@ module.exports = {
 					return runAddNames((n + 1));
 				}
 
-				var description = ["Successfully added " + newlyJoined.join(", ")];
+				var description = ["Successfully added `" + newlyJoined.join("`, `") + "`"];
 				if (comment !== "") description.push(" with comment: " + comment);
 				if (docs[0].tmrunning) description.push("\n\n**Changes are pending. To apply them, please restart your miner.** (`" + prefix + "restart`)");
 				else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");

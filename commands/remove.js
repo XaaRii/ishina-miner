@@ -23,9 +23,9 @@ module.exports = {
 			embed.setTitle(docs[0].tmusername + "'s miner")
 				.setTimestamp()
 				.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-			if (docs[0].tmrunning) embed.setDescription("Successfully removed " + argslist.join(", ") + "\n\n**Changes are pending. To apply them, please restart your miner.** (`" + prefix + "restart`)");
-			else if (docs[0].tmpassworded) embed.setDescription("Successfully removed " + argslist.join(", ") + "\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");
-			else embed.setDescription("Successfully removed " + argslist.join(", ") + "\n\n**Now all that's left is submitting the password so your miner can log in (one-time process)**\nYou can do so in DM's, so don't worry.");
+			if (docs[0].tmrunning) embed.setDescription("Successfully removed `" + argslist.join("`, `") + "`\n\n**Changes are pending. To apply them, please restart your miner.** (`" + prefix + "restart`)");
+			else if (docs[0].tmpassworded) embed.setDescription("Successfully removed `" + argslist.join("`, `") + "`\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");
+			else embed.setDescription("Successfully removed `" + argslist.join("`, `") + "`\n\n**Now all that's left is submitting the password so your miner can log in (one-time process)**\nYou can do so in DM's, so don't worry.");
 			message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 		});
 	},
