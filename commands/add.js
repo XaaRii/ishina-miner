@@ -11,13 +11,14 @@ module.exports = {
 	execute(message, args) {
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
+			if (err) console.log(err);
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("What streamers you wanna add?");
 
 			var newlyJoined = [], currlist = [], comment = "", argslist = args.split("\n").trim();
 			console.log(argslist);
 			if (argslist[0].startsWith("#")) {
-				if (!args[1]) return message.reply("What streamers you wanna add under this comment?");
+				if (!argslist[1]) return message.reply("What streamers you wanna add under this comment?");
 				comment = argslist[0].substring(1);
 				argslist.slice(1);
 			}
