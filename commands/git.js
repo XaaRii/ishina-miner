@@ -5,10 +5,11 @@ const { exec } = require('child_process');
 module.exports = {
 	name: 'git',
 	description: 'git pull from the repository',
-	usage: '',
+	usage: '(force)',
 	showHelp: false,
 	execute(message, args) {
 		if (message.author.id !== config.xaari) return message.reply("Hm? That spell is too powerful for you to use, buddy.");
+		if (args[0] === "force") return execc(message.channel, `git reset --hard origin/master`);
 		return execc(message.channel, `git pull`);
 	},
 };
