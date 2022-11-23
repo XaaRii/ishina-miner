@@ -20,7 +20,7 @@ module.exports = {
 				.setDescription("To get more info about a specific command,\ntype " + prefix + "help [command name]")
 				.addFields([{ name: `Available Commands:`, value: commands.map(x => `\`${prefix}${x.name}\``).join(' | ') }])
 				.setTimestamp()
-				.setFooter({ text: `Have fun!` });
+				.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 			message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 		} else {
 			const name = args[0].toLowerCase();
