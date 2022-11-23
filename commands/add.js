@@ -15,7 +15,7 @@ module.exports = {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("What streamers you wanna add?");
 
-			var newlyJoined = [], currlist = [], comment = "", argslist = args.split("\n").trim();
+			var newlyJoined = [], currlist = [], comment = "", argslist = args.join(" ").split("\n").trim();
 			console.log(argslist);
 			if (argslist[0].startsWith("#")) {
 				if (!argslist[1]) return message.reply("What streamers you wanna add under this comment?");
