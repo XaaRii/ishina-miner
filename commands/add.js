@@ -6,14 +6,20 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	name: 'add',
 	description: 'Adds new locations to mine in. You can even add multiple in one message.',
-	usage: '<streamer username> (streamer username) ...',
+	usage: '(#one_word_comment) <streamer username> (streamer username) ...',
 	showHelp: true,
 	execute(message, args) {
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("What streamers you wanna add?");
-			var newlyJoined = [], currlist = [];
+
+			var newlyJoined = [], currlist = [], comment = "";
+
+			if (args[0].startsWith("#")) {
+				if (!args[1]) return message.reply("What streamers you wanna add under this comment?");
+				comment = args[0].substring(1);
+			}
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) return runAddNames(0);
@@ -29,24 +35,37 @@ module.exports = {
 
 			function runAddNames(n) {
 				if (n < args.length) {
-					if (currlist.includes(args[n].toLowerCase())) return runAddNames((n + 1));
+					if (currlist.includes(args[n].toLowerCase())) {
+						tmvictimlist.find({ tmusername: docs[0].tmusername, tmvictim: args[n].toLowerCase() }, function (err, doc) {
+							if (doc.tmcomment === comment) return runAddNames((n + 1));
+							tmvictimlist.update({ tmusername: docs[0].tmusername, tmvictim: args[n].toLowerCase() }, { $set: { tmcomment: comment } }, {}, function(err, nou) {
+								newlyJoined.push(args[n] + " (comment updated)");
+								return runAddNames((n + 1));
+							});
+						});
+					}
 					newlyJoined.push(args[n]);
 
 					tmvictimlist.insert({
 						"tmusername": docs[0].tmusername,
 						"tmvictim": args[n].toLowerCase(),
+						"tmcomment": comment,
 					}, function (err) { if (err) return message.channel.send("Error happened!", err); });
 
 					currlist.push(args[n].toLowerCase());
 					return runAddNames((n + 1));
 				}
 
+				var description = ["Successfully added " + newlyJoined.join(", ")];
+				if (comment !== "") description.push(" with comment: " + comment);
+				if (docs[0].tmrunning) description.push("\n\n**Changes are pending. To apply them, please restart your miner.** (`" + prefix + "restart`)");
+				else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");
+				else description.push("\n\n**Now all that's left is submitting the password so your miner can log in (one-time process)** - `" + prefix + "pass <password>`\nYou can do so in DM's, so don't worry.");
+
 				embed.setTitle(docs[0].tmusername + "'s miner")
+					.setDescription(description.join(""))
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-				if (docs[0].tmrunning) embed.setDescription("Successfully added " + newlyJoined.join(", ") + "\n\n**Changes are pending. To apply them, please restart your miner.** (`" + prefix + "restart`)");
-				else if (docs[0].tmpassworded) embed.setDescription("Successfully added " + newlyJoined.join(", ") + "\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");
-				else embed.setDescription("Successfully added " + newlyJoined.join(", ") + "\n\n**Now all that's left is submitting the password so your miner can log in (one-time process)** - `" + prefix + "pass <password>`\nYou can do so in DM's, so don't worry.");
 				message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 			}
 		});

@@ -25,7 +25,8 @@ module.exports = {
 
 			function runListBuild(victlist, n, d) {
 				if (n < d.length) {
-					victlist.push(d[n].tmvictim);
+					if (d[n].tmcomment !== "") victlist.push(`${d[n].tmvictim} (${d[n].tmcomment})`);
+					else victlist.push(d[n].tmvictim);
 					return runListBuild(victlist, (n + 1), d);
 				}
 				const vlready = victlist.join("\n");

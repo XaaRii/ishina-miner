@@ -38,7 +38,7 @@ module.exports = {
 					.setDescription("Miner registered, but it's inactive.\nWhat to do now?")
 					.addFields([
 						{
-							name: "Add usernames to mine points and drops on", value: "`" + prefix + "add <username> (username) ...`", inline: false,
+							name: "Add usernames to mine points and drops on", value: "`" + prefix + "add (#one_word_comment) <username> (username) ...`", inline: false,
 						},
 						{
 							name: "Submit your password (so your miner can log in)", value: "You can do this in DM's using `" + prefix + "pass <password>`", inline: false,
