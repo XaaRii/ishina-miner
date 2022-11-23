@@ -33,7 +33,7 @@ module.exports = {
 									.setTimestamp()
 									.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 								message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
-								docs[0].tmrunning = false;
+								docsUpdate(false);
 							} else {
 								message.channel.sendTyping();
 								return loopcheck();
@@ -43,5 +43,10 @@ module.exports = {
 				}
 			});
 		});
+
+		function docsUpdate(runValue) {
+			// docsUpdate(tmrunning);
+			tmmachines.update({ tmowner: message.author.id }, { $set: { tmrunning: runValue } });
+		}
 	},
 };

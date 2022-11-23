@@ -12,7 +12,7 @@ module.exports = {
 	execute(message, args) {
 		message.channel.sendTyping();
 		if (!args[1]) {
-			const commands = client.commands.filter(x => x.showHelp !== false);
+			const commands = message.author.id === config.xaari ? client.commands : client.commands.filter(x => x.showHelp !== false);
 			const embed = new EmbedBuilder()
 				.setColor('ffbf00')
 				.setTitle(client.user.username + " - Twitch Miner module")

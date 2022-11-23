@@ -53,12 +53,12 @@ module.exports = {
 							if (err) return message.channel.send("Something fucked up, contact Pawele, he will help ya.");
 							if (stdout.includes("Loading data for")) {
 								embed.setDescription("Twitch miner started successfully.");
-								docs[0].tmrunning = true;
+								docsUpdate(true, true);
 							}
 							if (stdout.includes("You'll have to login to Twitch!")) {
 								embed.setDescription("Twitch miner couldn't start - it requires login (maybe you changed your password?)");
 								exec("screen -S tm-" + authorid + " -X stuff $'\003'");
-								docs[0].tmrunning = false; docs[0].tmpassworded = false;
+								docsUpdate(false, false);
 							}
 
 							embed.setTitle(docs[0].tmusername + "'s miner")
@@ -67,6 +67,11 @@ module.exports = {
 							message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 						});
 					}, 1500);
+				}
+
+				function docsUpdate(runValue, pwValue) {
+					// docsUpdate(tmrunning, tmpassworded);
+					tmmachines.update({ tmowner: message.author.id }, { $set: { tmrunning: runValue, tmpassworded: pwValue } });
 				}
 			});
 		});
