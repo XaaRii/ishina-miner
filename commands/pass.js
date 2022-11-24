@@ -58,7 +58,7 @@ module.exports = {
 			}
 			function finalizing() {
 				console.info("finalizing1");
-				exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`, function (err, stdout, stderr) {
+				exec(`cd twitchminers && screen -S tm-${authorid} -d -m python run${authorid}.py`, function (err, stdout, stderr) {
 					if (err) console.log(err);
 					setTimeout(() => {
 						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (err, stdout, stderr) {

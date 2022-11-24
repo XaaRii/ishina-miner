@@ -40,7 +40,7 @@ client.on('ready', () => {
 			for (let i = 0; i < docs.length; i++) {
 				if (!runningTM.includes(docs[i].tmowner) && docs[i].running && docs[i].passworded) {
 					// start it lol
-					exec(`screen -S tm-${docs[i].tmowner} -d -m python ./twitchminers/run${docs[i].tmowner}.py`, () => {});
+					exec(`cd twitchminers && screen -S tm-${docs[i].tmowner} -d -m python run${docs[i].tmowner}.py`, () => {});
 					console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
 				}
 				if (runningTM.includes(docs.tmowner) && (!docs[i].running || !docs[i].passworded)) {

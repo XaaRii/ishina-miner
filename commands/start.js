@@ -45,7 +45,7 @@ module.exports = {
 				}
 				function finalizing() {
 					// start it lol
-					exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`);
+					exec(`cd twitchminers && screen -S tm-${authorid} -d -m python run${authorid}.py`);
 
 					// i would like to wait and check here that it reads [Loading xx streamers...]
 					setTimeout(() => {
