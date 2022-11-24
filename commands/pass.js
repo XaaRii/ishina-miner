@@ -61,7 +61,7 @@ module.exports = {
 				exec(`screen -S tm-${authorid} -d -m python ./twitchminers/run${authorid}.py`, function (err, stdout, stderr) {
 					if (err) console.log(err);
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 5 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							console.info("prompted a hardcopy:");
 							if (stdout) console.log(stdout);
 							if (err) {
