@@ -196,8 +196,9 @@ module.exports = {
 								message.channel.send("Invalid 2FA verification code, please try again.");
 								return finalizing3();
 							}
+							return waitcheck();
 						});
-					}, 1500);
+					}, 2000);
 				}
 			}
 
