@@ -76,7 +76,9 @@ module.exports = {
 				});
 				break;
 			default:
-				return message.reply("Wrong 2nd argument. owner/username/passworded/running/list?");
+				tmmachines.find({ tmowner: args[0] }, function (err, docs) {
+					return message.reply(`Owner: ${docs[0].tmowner}\nUsername: ${docs[0].tmusername}\nPassworded? ${docs[0].tmpassworded}\nRunning? ${docs[0].tmrunning}\nCheck 'list show' for streamer list`);
+				});
 		}
 		function runListBuild(victlist, n, d, embed, tmusername) {
 			if (n < d.length) {
