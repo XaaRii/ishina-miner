@@ -126,11 +126,13 @@ module.exports = {
 					}
 					if (stdout.includes("Please enter the 6-digit")) {
 						console.info("stdout.includes Email Verification code required");
-						// Please enter the 6-digit code sent to g****@s***.cz:
-						const prepEmail = stdout.split(":");
-						const emailcens = prepEmail[0].replace("Please enter the 6-digit code sent to ", "");
-						message.reply("Login Verification code required! Please enter the 6-digit code sent to " + emailcens + "\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
-						return finalizing3();
+						exec(`tac ./twitchminers/templogs/${authorid}.log | grep -m 1 '[[:blank:]]'`, function (err, emailread, stderr) {
+							// Please enter the 6-digit code sent to g****@s***.cz:
+							const prepEmail = emailread.split(":");
+							const emailcens = prepEmail[0].replace("Please enter the 6-digit code sent to ", "");
+							message.reply("Login Verification code required! Please enter the 6-digit code sent to " + emailcens + "\nTo submit the 2FA code, **just type it as a normal message to me** (no command, no prefix, just those 6 numbers). I'll be listening for the next 5 minutes.");
+							return finalizing3();
+						});
 					}
 					if (stdout.includes("Invalid username or password")) {
 						console.info("stdout.includes Invalid username or password");
