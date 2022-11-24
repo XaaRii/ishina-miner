@@ -33,29 +33,7 @@ const { inspect } = require('util');
 client.on('ready', () => {
 	console.info(`Logged in as ${client.user.tag}!`);
 	console.info(`I am a module [${config.moduleName}] with prefix ${config.prefix}`);
-	exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
-		const runningTM = stdout.split("\n");
-		console.log(runningTM);
-		tmmachines.find({}, function (err, docs) {
-			for (let i = 0; i < docs.length; i++) {
-				if (!runningTM.includes(docs[i].tmowner) && docs[i].running && docs[i].passworded) {
-					// start it lol
-					exec(`screen -S tm-${docs[i].tmowner} -d -m python ./twitchminers/run${docs[i].tmowner}.py`, () => {});
-					console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
-				}
-				if (runningTM.includes(docs.tmowner) && (!docs[i].running || !docs[i].passworded)) {
-					// end it lol
-					exec("screen -S tm-" + docs[i].tmowner + " -X stuff $'\003'", () => {});
-					console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
-				}
-			}
-		});
 
-		if (error !== null) {
-			if (client.channels.cache.get('735207428299161602') !== undefined) client.channels.cache.get('735207428299161602').send(config.moduleName + " ᴇʀʀᴏʀ: `" + error + "`");
-		}
-	});
-	if (client.channels.cache.get('894203532092264458') !== undefined) client.channels.cache.get('894203532092264458').send('Twitch module started!');
 });
 
 client.on("messageCreate", async message => {

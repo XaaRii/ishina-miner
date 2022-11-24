@@ -14,7 +14,10 @@ module.exports = {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("Who you wanna remove? (check out " + prefix + "list)");
 
-			var argslist = args.split("\n").trim();
+			var al = "", argslist = args;
+			al = argslist.join(" ");
+			argslist = al.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
+			console.log(argslist);
 			for (let i = 0; i < argslist.length; i++) {
 				tmvictimlist.remove({ tmusername: docs[0].tmusername, tmvictim: argslist[i].toLowerCase() }, function (err) {
 					if (err) return message.channel.send("Error happened!", err);
