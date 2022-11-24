@@ -27,7 +27,7 @@ module.exports = {
 						.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 					return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 				} else {
-					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (ee, oo, ooee) {
+					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (ee, oo, ooee) {
 						if (ee) return message.reply("Something fucked up, please report to Pawele.");
 						embed.setColor('e82e2e')
 							.setTitle(docs[0].tmusername + "'s miner")

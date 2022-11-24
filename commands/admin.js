@@ -72,7 +72,7 @@ module.exports = {
 				break;
 			default:
 				tmmachines.find({ tmowner: args[0] }, function (err, docs) {
-					return message.reply(`Owner: ${docs[0].tmowner}\nUsername: ${docs[0].tmusername}\nPassworded? ${docs[0].tmpassworded}\nRunning? ${docs[0].tmrunning}\nCheck 'list show' for streamer list`);
+					return message.reply(`**Owner:** ${docs[0].tmowner}\n**Username:** ${docs[0].tmusername}\n**Passworded?** ${docs[0].tmpassworded}\n**Running?** ${docs[0].tmrunning}\nCheck 'list show' for streamer list`);
 				});
 		}
 		function runListBuild(victlist, n, d, embed, tmusername) {
