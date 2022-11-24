@@ -9,11 +9,6 @@ module.exports = {
 	showHelp: false,
 	execute(message, args) {
 		if (!args[0]) return message.reply("1: userid?");
-		if (!args[1]) return message.reply("2: owner/username/passworded/running/list?");
-		if (!args[2]) {
-			if (args[1] !== "list") return message.reply("3: value?");
-			else return message.reply("3: reset/view?");
-		}
 		//	var rTMmachine = {
 		//		"tmowner": message.author.id,
 		//		"tmusername": arg0,
