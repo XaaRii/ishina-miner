@@ -34,12 +34,18 @@ module.exports = {
 				});
 				break;
 			case "passworded":
+				if (args[2] === "true") args[2] = true;
+				else if (args[2] === "false") args[2] = false;
+				else return message.channel.send("only true/false is supported, you stupid");
 				tmmachines.update({ tmowner: args[0] }, { $set: { tmpassworded: args[2] } }, {}, function (err, n) {
 					if (err) return message.channel.send("error:\n" + err);
 					return message.channel.send("Done.");
 				});
 				break;
 			case "running":
+				if (args[2] === "true") args[2] = true;
+				else if (args[2] === "false") args[2] = false;
+				else return message.channel.send("only true/false is supported, you stupid");
 				tmmachines.update({ tmowner: args[0] }, { $set: { tmrunning: args[2] } }, {}, function (err, n) {
 					if (err) return message.channel.send("error:\n" + err);
 					return message.channel.send("Done.");
