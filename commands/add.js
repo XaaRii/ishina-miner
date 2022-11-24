@@ -14,7 +14,7 @@ module.exports = {
 			if (err) console.log(err);
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!args[0]) return message.reply("What streamers you wanna add?");
-			var newlyJoined = [], currlist = [], comment = "", argslist = args;
+			var newlyJoined = [], currlist = [], comment = "", argslist = args, description = [];
 			const al = argslist.join(" ");
 			argslist = al.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
 			console.log(argslist);
@@ -39,15 +39,15 @@ module.exports = {
 			function runAddNames(n) {
 				if (n < argslist.length) {
 					if (currlist.includes(argslist[n].toLowerCase())) return runAddNames((n + 1));
-						// tmvictimlist.find({ tmusername: docs[0].tmusername, tmvictim: argslist[n].toLowerCase() }, function (err, doc) {
-						// 	if (doc.tmcomment === comment) return runAddNames((n + 1));
-						// 	tmvictimlist.remove({ _id: doc._id }, function (err) { if (err) return message.channel.send("Error happened!", err); });
-						// 	tmvictimlist.insert({
-						// 		"tmusername": docs[0].tmusername,
-						// 		"tmvictim": argslist[n].toLowerCase(),
-						// 		"tmcomment": comment,
-						// 	}, function (err) { if (err) return message.channel.send("Error happened!", err); });
-						// 	newlyJoined.push(argslist[n] + " (comment updated)");
+					// tmvictimlist.find({ tmusername: docs[0].tmusername, tmvictim: argslist[n].toLowerCase() }, function (err, doc) {
+					// 	if (doc.tmcomment === comment) return runAddNames((n + 1));
+					// 	tmvictimlist.remove({ _id: doc._id }, function (err) { if (err) return message.channel.send("Error happened!", err); });
+					// 	tmvictimlist.insert({
+					// 		"tmusername": docs[0].tmusername,
+					// 		"tmvictim": argslist[n].toLowerCase(),
+					// 		"tmcomment": comment,
+					// 	}, function (err) { if (err) return message.channel.send("Error happened!", err); });
+					// 	newlyJoined.push(argslist[n] + " (comment updated)");
 
 					tmvictimlist.insert({
 						"tmusername": docs[0].tmusername,
@@ -60,7 +60,6 @@ module.exports = {
 					return runAddNames((n + 1));
 				}
 
-				var description = [];
 				if (newlyJoined.length) {
 					description.push("Successfully added `" + newlyJoined.join("`, `") + "`");
 					if (comment !== "") description.push(" with comment: " + comment);
@@ -70,6 +69,9 @@ module.exports = {
 				else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");
 				else description.push("\n\n**Now all that's left is submitting the password so your miner can log in (one-time process)** - `" + prefix + "pass <password>`\nYou can do so in DM's, so don't worry.");
 
+				return sendmessage();
+			}
+			function sendmessage() {
 				embed.setTitle(docs[0].tmusername + "'s miner")
 					.setDescription(description.join(""))
 					.setTimestamp()
