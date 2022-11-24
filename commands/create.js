@@ -14,7 +14,7 @@ module.exports = {
 			if (docs.length > 0) return message.reply("Sorry, but you already have one. If you wanna replace it, i suggest using `" + prefix + "destroy` command");
 			if (!args[0]) return message.reply("Missing argument: username");
 			if (args[1]) return message.reply("Was that a typo? twitch usernames don't have spaces.");
-			// add a username check ^[a-zA-Z0-9_]{4,25}$
+			if (!/^[a-zA-Z0-9_]{4,25}$/.test(args[0])) return message.reply(`'${args[0]}' is not a twitch-supported username`);
 			var arg0 = args[0].toLowerCase();
 			var rTMmachine = {
 				"tmowner": message.author.id,
