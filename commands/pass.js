@@ -61,7 +61,7 @@ module.exports = {
 				exec(`cd twitchminers && screen -S tm-${authorid} -d -m python run${authorid}.py`, function (err, stdout, stderr) {
 					if (err) console.log(err);
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							console.info("prompted a hardcopy:");
 							if (stdout) console.log(stdout);
 							if (err) {
@@ -98,7 +98,7 @@ module.exports = {
 			}
 			function finalizing2() {
 				console.info("finalizing2");
-				exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 8 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+				exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./templogs/${authorid}.log | grep -m 8 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 					console.info("prompted a hardcopy:");
 					if (stdout) console.log(stdout);
 					if (err) {
@@ -170,7 +170,7 @@ module.exports = {
 				function waitcheck() {
 					console.info("waitcheck");
 					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "./twitchminers/templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 9 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./templogs/${authorid}.log | grep -m 9 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							if (stdout) console.info(stdout);
 							if (err) {
 								console.log("finalizing3 hardcopy -\n" + err);
