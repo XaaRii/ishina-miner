@@ -50,7 +50,7 @@ client.on('ready', () => {
 						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
 				}
-				if (runningTM.includes(docs.tmowner) && (!docs[i].tmrunning || !docs[i].tmpassworded)) {
+				if (runningTM.includes(docs.tmowner) && !(docs[i].tmrunning && docs[i].tmpassworded)) {
 					// end it lol
 					exec("screen -S tm-" + docs[i].tmowner + " -X stuff $'\003'", (err) => {
 						if (err) console.log(err);
