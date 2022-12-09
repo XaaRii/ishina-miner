@@ -41,20 +41,20 @@ client.on('ready', () => {
 				console.log(docs[i]);
 				console.log(docs[i].tmowner);
 				console.log("includes? " + runningTM.includes(docs[i].tmowner));
-				console.log("running? " + docs[i].running);
-				console.log("passworded? " + docs[i].passworded);
-				if (!runningTM.includes(docs[i].tmowner) && docs[i].running && docs[i].passworded) {
+				console.log("running? " + docs[i].tmrunning);
+				console.log("passworded? " + docs[i].tmpassworded);
+				if (!runningTM.includes(docs[i].tmowner) && docs[i].tmrunning && docs[i].tmpassworded) {
 					// start it lol
 					exec(`cd twitchminers && screen -S tm-${docs[i].tmowner} -d -m python run${docs[i].tmowner}.py`, (err) => {
 						if (err) console.log(err);
-						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
+						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
 				}
-				if (runningTM.includes(docs.tmowner) && (!docs[i].running || !docs[i].passworded)) {
+				if (runningTM.includes(docs.tmowner) && (!docs[i].tmrunning || !docs[i].tmpassworded)) {
 					// end it lol
 					exec("screen -S tm-" + docs[i].tmowner + " -X stuff $'\003'", (err) => {
 						if (err) console.log(err);
-						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].running}`);
+						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
 				}
 			}
