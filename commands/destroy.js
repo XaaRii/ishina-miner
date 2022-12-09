@@ -8,6 +8,7 @@ const { exec } = require('child_process');
 module.exports = {
 	name: 'destroy',
 	description: 'Unregister your twitch miner.',
+	aliases: ['unregister'],
 	showHelp: true,
 	execute(message, args) {
 		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {

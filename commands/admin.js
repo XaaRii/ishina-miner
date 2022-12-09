@@ -53,6 +53,7 @@ module.exports = {
 						tmvictimlist.remove({ tmusername: docs[0].tmusername }, { multi: true }, function (e) {
 							if (err) return message.channel.send("Error happened!", e);
 						});
+						return message.reply("Done");
 					} else if (args[2] === "view") {
 						var victlist = [];
 						const embed = new EmbedBuilder().setColor('ffbf00');
@@ -67,12 +68,11 @@ module.exports = {
 						});
 					} else return message.reply("Wrong 3rd arg. reset/view?");
 					if (err) return message.channel.send("error:\n" + err);
-					return message.channel.send("Done.");
 				});
 				break;
 			default:
 				tmmachines.find({ tmowner: args[0] }, function (err, docs) {
-					return message.reply(`**Owner:** ${docs[0].tmowner}\n**Username:** ${docs[0].tmusername}\n**Passworded?** ${docs[0].tmpassworded}\n**Running?** ${docs[0].tmrunning}\nCheck 'list show' for streamer list`);
+					return message.reply(`**Owner:** ${docs[0].tmowner}\n**Username:** ${docs[0].tmusername}\n**Passworded?** ${docs[0].tmpassworded}\n**Running?** ${docs[0].tmrunning}\nCheck 'list view' for streamer list`);
 				});
 		}
 		function runListBuild(victlist, n, d, embed, tmusername) {

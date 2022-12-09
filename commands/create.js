@@ -7,6 +7,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'create',
 	description: 'Register your own twitch miner!',
+	aliases: ['register'],
 	usage: '<username>',
 	showHelp: true,
 	execute(message, args) {
