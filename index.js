@@ -3,11 +3,10 @@ require('console-stamp')(console);
 const Discord = require("discord.js");
 const { REST, Routes } = require('discord.js');
 const { client } = require('./exports.js');
-const fs = require("fs"), ms = require('ms');
+const fs = require("fs");
 const config = require('./.cfg.json');
 var { tmmachines, tmvictimlist } = require('./exports.js');
 var prefix = config.prefix;
-var temp1, temp2, temp3;
 
 // Commands init
 client.commands = new Discord.Collection();
@@ -38,21 +37,16 @@ client.on('ready', () => {
 		console.log(runningTM);
 		tmmachines.find({}, function (err, docs) {
 			for (let i = 0; i < docs.length; i++) {
-				console.log(docs[i]);
-				console.log(docs[i].tmowner);
-				console.log("includes? " + runningTM.includes(docs[i].tmowner));
-				console.log("running? " + docs[i].tmrunning);
-				console.log("passworded? " + docs[i].tmpassworded);
 				if (!runningTM.includes(docs[i].tmowner) && docs[i].tmrunning && docs[i].tmpassworded) {
 					// start it lol
-					exec(`cd twitchminers && screen -S tm-${docs[i].tmowner} -d -m python run${docs[i].tmowner}.py`, (err) => {
+					exec(`cd twitchminers && screen -S tm-${docs[i].tmowner} -d -m python run${docs[i].tmowner}.py`, (err, sout, serr) => {
 						if (err) console.log(err);
 						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
 				}
-				if (runningTM.includes(docs.tmowner) && !(docs[i].tmrunning && docs[i].tmpassworded)) {
+				if (runningTM.includes(docs[i].tmowner) && !(docs[i].tmrunning && docs[i].tmpassworded)) {
 					// end it lol
-					exec("screen -S tm-" + docs[i].tmowner + " -X stuff $'\003'", (err) => {
+					exec("screen -S tm-" + docs[i].tmowner + " -X stuff $'\003'", (err, sout, serr) => {
 						if (err) console.log(err);
 						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
