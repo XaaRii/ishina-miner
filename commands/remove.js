@@ -16,7 +16,6 @@ module.exports = {
 			var newlyDeleted = [], currlist = [], argslist = args, description = [];
 			const al = argslist.join(" ");
 			argslist = al.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
-			console.log(argslist);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) {
