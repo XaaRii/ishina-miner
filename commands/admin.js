@@ -14,12 +14,14 @@ module.exports = {
 			if (fs.existsSync("../passblocked")) return message.reply("already blocked");
 			fs.writeFile('../passblocked', "blocked", function() {
 				console.info("Block enabled");
+				return message.reply("Block enabled");
 			});
 		}
 		if (args[0] === "unblock") {
 			if (!fs.existsSync("../passblocked")) return message.reply("already unblocked");
 			fs.unlink('../passblocked', function () {
 				console.info("Block disabled");
+				message.reply("Block disabled");
 				const { passblock, client } = require('../exports.js');
 				passblock.find({ }, function (err, docs) {
 					return sendiary(client, docs, 0);
