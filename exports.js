@@ -31,7 +31,9 @@ const client = new Client({
 const Datastore = require('nedb');
 const db1 = new Datastore({ filename: './tmmachines.db', autoload: true });
 const db2 = new Datastore({ filename: './tmvictimlist.db', autoload: true });
+const db3 = new Datastore({ filename: './tmpassblock.db', autoload: true });
 
 exports.client = client;
 exports.tmmachines = db1;
 exports.tmvictimlist = db2;
+exports.passblock = db3;

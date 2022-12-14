@@ -2,7 +2,7 @@ const config = require("../.cfg.json");
 const prefix = config.prefix;
 var { tmmachines, tmvictimlist } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
-const fs = require('fs'); const ms = require('ms');
+const fs = require('fs');
 const { exec } = require('child_process');
 
 module.exports = {
@@ -11,6 +11,17 @@ module.exports = {
 	usage: '<pass>',
 	showHelp: true,
 	execute(message, args) {
+		if (fs.existsSync("../passblocked")) {
+			const { passblock } = require('../exports.js');
+			passblock.find({ who: message.author.id }, function (err, docs) {
+				if (docs.length < 1) {
+					passblock.insert({ "who": message.author.id }, (err) => {
+						if (err) return message.reply("Something fucked up while trying to write down your name to remind you later about availability of this command:\n" + err);
+					});
+				}
+				return message.reply("I'm sorry, but twitch had a change in logging in - until this is resolved, I cannot log in...\nWhen this gets fixed, I'll send you a message. Thanks for understanding.");
+			});
+		}
 		const pass = args.join(/ +/);
 		// message.delete().catch(O_o => { });
 

