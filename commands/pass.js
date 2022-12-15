@@ -11,7 +11,8 @@ module.exports = {
 	usage: '<pass>',
 	showHelp: true,
 	execute(message, args) {
-		if (fs.existsSync("../passblocked")) {
+		if (fs.existsSync("../passblocked")) return passblock(message);
+		function passblock(message) {
 			const { passblock } = require('../exports.js');
 			passblock.find({ who: message.author.id }, function (err, docs) {
 				if (docs.length < 1) {
