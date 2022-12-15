@@ -118,6 +118,8 @@ function sendiary(client, docs, i) {
 		setTimeout(() => {
 			return sendiary(client, docs, (i + 1));
 		}, 3000);
+	} else {
+		passblock.remove({ }, { multi: true });
 	}
 	return;
 }
