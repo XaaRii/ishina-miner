@@ -27,12 +27,13 @@ module.exports = {
 		// message.delete().catch(O_o => { });
 
 		const embed = new EmbedBuilder().setColor('ffbf00');
+		var timeIssued;
 
 		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (docs[0].tmpassworded) return message.reply("You don't have to authorize again. It was already accepted.\nIf there are any problems (fe. you changed twitch username) contact Pawele, he will help you.");
 			// if (!args[0]) return message.reply("If you won't pass me any password, i can't log in!");
-			if (docs[0].tmrunning) return message.reply("Please do not use this command, just type the numbers alone.");
+			if (docs[0].tmrunning) return message.reply("There is already an authorization process ongoing.");
 
 			message.channel.sendTyping();
 			const authorid = docs[0].tmowner;
@@ -89,6 +90,7 @@ module.exports = {
 								let authCode = stdout.split("enter this code: ");
 								authCode = authCode[0].split(/\r?\n|\r/g);
 								message.reply(`You want to authorize your twitch miner called \`${docs[0].tmusername}\` right?\nFor that, you have to go to a website __<https://www.twitch.tv/activate>__, fill in the following code: \`${authCode[0]}\` and grant the access to your account.\n**__Make sure you are logged into the correct account before progressing!__** If the name isn't the same as the one you put into twitch miner, bad things will happen.\nAfter that, the miner will be ready to go. But be quick, you only have 30 minutes before the code expires!`);
+								timeIssued = Date.now();
 								return waitcheck();
 
 					//		if (stdout.includes("Enter Twitch password")) {
@@ -196,6 +198,11 @@ module.exports = {
 			function waitcheck() {
 				console.info("waitcheck");
 				setTimeout(() => {
+					if (Date.now() > (timeIssued + 1800000)) {
+						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
+						docsUpdate(false, false);
+						return message.reply("You didn't finish it on time and the code expired.");
+					}
 					message.channel.sendTyping();
 					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 9 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 						if (stdout) console.info(stdout);
@@ -231,7 +238,7 @@ module.exports = {
 					//	}
 						return waitcheck();
 					});
-				}, 2000);
+				}, 5000);
 			}
 
 			function docsUpdate(runValue, pwValue) {
