@@ -88,7 +88,7 @@ module.exports = {
 								console.info("stdout.includes It will expire in");
 								docsUpdate(true, false);
 								let authCode = stdout.split("enter this code: ");
-								authCode = authCode[0].split(/\r?\n|\r/g);
+								authCode = authCode[1].split(/\r?\n|\r/g);
 								message.reply(`You want to authorize your twitch miner called \`${docs[0].tmusername}\` right?\nFor that, you have to go to a website __<https://www.twitch.tv/activate>__, fill in the following code: \`${authCode[0]}\` and grant the access to your account.\n**__Make sure you are logged into the correct account before progressing!__** If the name isn't the same as the one you put into twitch miner, bad things will happen.\nAfter that, the miner will be ready to go. But be quick, you only have 30 minutes before the code expires!`);
 								timeIssued = Date.now();
 								return waitcheck();
