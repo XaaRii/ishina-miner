@@ -6,10 +6,10 @@ const fs = require('fs');
 module.exports = {
 	name: 'admin',
 	description: 'Admin command: modify database',
-	usage: 'status/block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...',
+	usage: 'block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...',
 	showHelp: false,
 	execute(message, args) {
-		if (!args[0]) return message.reply("1: userid?");
+		if (!args[0]) return message.reply("1: userid? (or block/unblock)");
 		if (args[0] === "block") {
 			if (fs.existsSync("../passblocked")) return message.reply("already blocked");
 			fs.writeFile('../passblocked', "blocked", function() {
