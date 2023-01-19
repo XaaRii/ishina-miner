@@ -213,6 +213,7 @@ module.exports = {
 					//	}
 						if (err) {
 							console.log("f3 err triggered, bad username?\n" + err);
+							docsUpdate(false, false);
 							return message.channel.send("Twitch miner crashed. Are you sure you authorized with the right account?\nYou can try again to make sure or contact Pawele for help.");
 						}
 						if (stdout.includes("automatic temporary ban") || stdout.includes("Use a VPN")) {
