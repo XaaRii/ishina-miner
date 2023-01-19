@@ -6,7 +6,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'admin',
 	description: 'Admin command: modify database',
-	usage: 'block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...',
+	usage: 'status/block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...',
 	showHelp: false,
 	execute(message, args) {
 		if (!args[0]) return message.reply("1: userid?");
@@ -19,11 +19,12 @@ module.exports = {
 		}
 		if (args[0] === "unblock") {
 			if (!fs.existsSync("../passblocked")) return message.reply("already unblocked");
+			const msg = args[1] ? args.slice(1).join(" ") : undefined;
 			fs.unlink('../passblocked', function () {
 				console.info("Block disabled");
 				message.reply("Block disabled");
 				passblock.find({ }, function (err, docs) {
-					return sendiary(client, docs, 0);
+					return sendiary(client, docs, 0, msg);
 				});
 			});
 		}
@@ -110,13 +111,15 @@ module.exports = {
 	},
 };
 
-function sendiary(client, docs, i) {
+function sendiary(client, docs, i, msg) {
 	if (i < docs.length) {
 		client.users.fetch(docs[i].who, false).then((user) => {
-			user.send('Hi, I remember you trying to authenticate your twitch miner a while ago. Back then it didn\'t work, but I can proudly say that it should work now!\nOnce you authenticate, your miner will be up and running. Have fun!');
+			msg ?
+				user.send('Hi, I remember you trying to authenticate your twitch miner a while ago. Pawele fixed it and left a message:\n' + msg + '\n\nOnce you authenticate, your miner will be up and running. Have fun!')
+				: user.send('Hi, I remember you trying to authenticate your twitch miner a while ago. Pawele looked into it and it should now be available again!\n\nOnce you authenticate, your miner will be up and running. Have fun!');
 		});
 		setTimeout(() => {
-			return sendiary(client, docs, (i + 1));
+			return sendiary(client, docs, (i + 1), msg);
 		}, 3000);
 	} else {
 		passblock.remove({ }, { multi: true });
