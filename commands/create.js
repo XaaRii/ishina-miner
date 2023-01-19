@@ -43,7 +43,7 @@ module.exports = {
 							name: "Add usernames to mine points and drops on", value: "`" + prefix + "add (#one_word_comment) <username> (username) ...`", inline: false,
 						},
 						{
-							name: "Submit your password (so your miner can log in)", value: "You can do this in DM's using `" + prefix + "pass <password>`", inline: false,
+							name: "Authorize your twitch miner", value: "You can do this in DM's using `" + prefix + "auth`", inline: false,
 						},
 						{
 							name: "And that's all!", value: "**__Other commands:__**\n`" + prefix + "status` to check if it's running\n`" + prefix + "start/stop/restart`\n`" + prefix + "add/remove/list` for editing where you want to mine\n", inline: false,

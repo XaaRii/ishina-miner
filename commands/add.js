@@ -66,7 +66,7 @@ module.exports = {
 
 				if (docs[0].tmrunning) newlyJoined.length ? description.push("\n\n**Changes are pending. To apply them, please restart your miner.** (`" + prefix + "restart`)") : newlyJoined = [];
 				else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `" + prefix + "start`)");
-				else description.push("\n\n**Now all that's left is submitting the password so your miner can log in (one-time process)** - `" + prefix + "pass <password>`\nYou can do so in DM's, so don't worry.");
+				else description.push("\n\n**Now all that's left is authorizing your miner (one-time process)** - `" + prefix + "auth`\nYou can do so even in DM's, so don't worry.");
 
 				return sendmessage();
 			}

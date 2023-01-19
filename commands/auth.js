@@ -6,9 +6,9 @@ const fs = require('fs');
 const { exec } = require('child_process');
 
 module.exports = {
-	name: 'pass',
-	description: 'Submit the password so your miner can log in and start mining.',
-	usage: '<pass>',
+	name: 'auth',
+	description: 'Authorize your twitch miner.',
+	usage: '',
 	showHelp: true,
 	execute(message, args) {
 		if (fs.existsSync("../passblocked")) return passblock(message);
@@ -23,15 +23,15 @@ module.exports = {
 				return message.reply("I'm sorry, but twitch had a change in logging in - until this is resolved, I cannot log in...\nWhen this gets fixed, I'll send you a message. Thanks for understanding.");
 			});
 		}
-		const pass = args.join(/ +/);
+		// const pass = args.join(/ +/);
 		// message.delete().catch(O_o => { });
 
 		const embed = new EmbedBuilder().setColor('ffbf00');
 
 		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
-			if (docs[0].tmpassworded) return message.reply("You don't have to fill in the password again. It was already accepted.");
-			if (!args[0]) return message.reply("If you won't pass me any password, i can't log in!");
+			if (docs[0].tmpassworded) return message.reply("You don't have to authorize again. It was already accepted.\nIf there are any problems (fe. you changed twitch username) contact Pawele, he will help you.");
+			// if (!args[0]) return message.reply("If you won't pass me any password, i can't log in!");
 			if (docs[0].tmrunning) return message.reply("Please do not use this command, just type the numbers alone.");
 
 			message.channel.sendTyping();
@@ -44,7 +44,7 @@ module.exports = {
 					.pipe(fs.createWriteStream('./twitchminers/cookies/' + docs[0].tmusername));
 				return message.channel.send("File downloaded, now you can start your miner with " + prefix + "start");
 			} else {
-				console.info(`Password fill Request from ${message.author.username} is occurring:`);
+				console.info(`Auth request from ${message.author.username} is occurring:`);
 				// rebuild the runPy
 				var victlist = ['twitch_miner.mine(', '    ['];
 				tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
@@ -83,18 +83,25 @@ module.exports = {
 								console.log("finalizing1 hardcopy -\n" + err);
 								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
 							}
-							if (stdout.includes("Enter Twitch password")) {
-								console.info("stdout.includes Enter Twitch password");
+							if (stdout.includes("It will expire in")) {
+								console.info("stdout.includes It will expire in");
 								docsUpdate(true, false);
+								let authCode = stdout.split("enter this code: ");
+								authCode = authCode[0].split(/\r?\n|\r/g);
+								message.reply(`You want to authorize your twitch miner called \`${docs[0].tmusername}\` right?\nFor that, you have to go to a website __<https://www.twitch.tv/activate>__, fill in the following code: \`${authCode[0]}\` and grant the access to your account.\n**__Make sure you are logged into the correct account before progressing!__** If the name isn't the same as the one you put into twitch miner, bad things will happen.\nAfter that, the miner will be ready to go. But be quick, you only have 30 minutes before the code expires!`);
+								return waitcheck();
 
+					//		if (stdout.includes("Enter Twitch password")) {
+					//			console.info("stdout.includes Enter Twitch password");
+					//			docsUpdate(true, false);
 								// insert password
-								exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"', function (ee, sout, serr) {
-									console.info("injecting password");
-									message.channel.sendTyping();
-									setTimeout(() => {
-										return finalizing2();
-									}, 1500);
-								});
+					//			exec('screen -S tm-' + authorid + ' -X stuff "' + pass + '\015"', function (ee, sout, serr) {
+					//				console.info("injecting password");
+					//				message.channel.sendTyping();
+					//				setTimeout(() => {
+					//					return finalizing2();
+					//				}, 1500);
+					//			});
 							} else if (stdout.includes("Loading data for")) {
 								console.info("stdout.includes Loading data for");
 								// prefilled pw / cookies
@@ -108,6 +115,7 @@ module.exports = {
 					}, 1500);
 				});
 			}
+			/*
 			function finalizing2() {
 				console.info("finalizing2");
 				exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 8 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
@@ -153,67 +161,77 @@ module.exports = {
 						return message.reply("Invalid username or password. Please try again.");
 					}
 				});
+			}
+			*/
 
-				function finalizing3() {
-					console.info("finalizing3");
+			/*
+			function finalizing3() {
+				console.info("finalizing3");
 					// 2FA thing listener
-					var twoFA = "";
-					const filter = m => m.author.id === authorid;
-					const collector = message.channel.createMessageCollector({ filter, time: 300000 });
-					collector.on('collect', m => {
-						console.info("collector triggered");
-						if (!m.content.startsWith("..twitch ")) {
-							if (isNaN(m)) message.channel.send("That is not a valid number!");
-							else twoFA = m.content;
-							collector.stop();
-						}
-					});
+				var twoFA = "";
+				const filter = m => m.author.id === authorid;
+				const collector = message.channel.createMessageCollector({ filter, time: 300000 });
+				collector.on('collect', m => {
+					console.info("collector triggered");
+					if (!m.content.startsWith("..twitch ")) {
+						if (isNaN(m)) message.channel.send("That is not a valid number!");
+						else twoFA = m.content;
+						collector.stop();
+					}
+				});
 
-					collector.on('end', c => {
-						console.info("collector ends");
-						if (twoFA === "") {
-							docsUpdate(false, false);
-							exec("screen -S tm-" + authorid + " -X stuff $'\003'");
-							return message.channel.send("No valid 2FA verification code provided for the past 5 minutes, exiting...");
+				collector.on('end', c => {
+					console.info("collector ends");
+					if (twoFA === "") {
+						docsUpdate(false, false);
+						exec("screen -S tm-" + authorid + " -X stuff $'\003'");
+						return message.channel.send("No valid 2FA verification code provided for the past 5 minutes, exiting...");
+					}
+					exec('screen -S tm-' + authorid + ' -X stuff "' + twoFA + '\015"');
+					return waitcheck();
+				});
+			}
+			*/
+
+			function waitcheck() {
+				console.info("waitcheck");
+				setTimeout(() => {
+					message.channel.sendTyping();
+					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 9 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
+						if (stdout) console.info(stdout);
+						// with the old password approach this shouldn't happen
+					//	if (err) {
+					//		console.log("finalizing3 hardcopy -\n" + err);
+					//		return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
+					//	}
+						if (err) {
+							console.log("f3 err triggered, bad username?\n" + err);
+							return message.channel.send("Twitch miner crashed. Are you sure you authorized with the right account?\nYou can try again to make sure or contact Pawele for help.");
 						}
-						exec('screen -S tm-' + authorid + ' -X stuff "' + twoFA + '\015"');
+						if (stdout.includes("automatic temporary ban") || stdout.includes("Use a VPN")) {
+								// message.channel.send("It seems we got automatically temporarily banned from trying to log in. This happens when you incorrectly submit your 2FA a few times.\n**Don't worry, it is only temporary**. Try again tomorrow.");
+							message.channel.send("It seems we got automatically temporarily banned from trying to log in. This happens sometimes.\n**Don't worry, it is only temporary**. Try again tomorrow.");
+							exec("screen -S tm-" + authorid + " -X stuff $'\003'");
+							docsUpdate(false, false);
+							return fs.unlink('./twitchminers/cookies/' + docs[0].tmusername + '.pkl', () => true);
+						}
+						if (stdout.includes("Loading data for")) {
+							docsUpdate(true, true);
+							embed.setTitle(docs[0].tmusername + "'s miner")
+								.setFields([{
+									name: "Logged in successfully!", value: "Authorization complete, your miner will now start.", inline: false,
+								}])
+								.setTimestamp()
+								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+							return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
+						}
+					//	if (stdout.includes("Invalid Login") || stdout.includes("Invalid two factor")) {
+					//		message.channel.send("Invalid 2FA verification code, please try again.");
+					//		return finalizing3();
+					//	}
 						return waitcheck();
 					});
-				}
-
-				function waitcheck() {
-					console.info("waitcheck");
-					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 9 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
-							if (stdout) console.info(stdout);
-							if (err) {
-								console.log("finalizing3 hardcopy -\n" + err);
-								return message.channel.send("Something fucked up, contact Pawele, he will look into it.");
-							}
-							if (stdout.includes("automatic temporary ban") || stdout.includes("Use a VPN")) {
-								message.channel.send("It seems we got automatically temporarily banned from trying to log in. This happens when you incorrectly submit your 2FA a few times.\n**Don't worry, it is only temporary**. Try again tomorrow.");
-								exec("screen -S tm-" + authorid + " -X stuff $'\003'");
-								docsUpdate(false, false);
-								return fs.unlink('./twitchminers/cookies/' + docs[0].tmusername + '.pkl', () => true);
-							}
-							if (stdout.includes("Loading data for")) {
-								docsUpdate(true, true);
-								embed.setTitle(docs[0].tmusername + "'s miner")
-									.setFields([{
-										name: "Logged in successfully!", value: "Authorization complete, your miner will now start.", inline: false,
-									}])
-									.setTimestamp()
-									.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-								return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
-							}
-							if (stdout.includes("Invalid Login") || stdout.includes("Invalid two factor")) {
-								message.channel.send("Invalid 2FA verification code, please try again.");
-								return finalizing3();
-							}
-							return waitcheck();
-						});
-					}, 2000);
-				}
+				}, 2000);
 			}
 
 			function docsUpdate(runValue, pwValue) {

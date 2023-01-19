@@ -21,7 +21,7 @@ module.exports = {
 				else embed.setDescription("Your twitch miner is not running.").setColor('e82e2e');
 
 				if (!docs[0].tmpassworded) {embed.addFields([{
-					name: `Attention!`, value: "Your miner is missing cookies file. Please use `" + prefix + "pass <password>` to finish the setup", inline: false,
+					name: `Attention!`, value: "Your miner is missing cookies file. Please use `" + prefix + "auth` to finish the setup", inline: false,
 				}]);}
 
 				embed.setTitle(docs[0].tmusername + "'s miner")
