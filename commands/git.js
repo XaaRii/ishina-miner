@@ -8,7 +8,7 @@ module.exports = {
 	usage: '(force)/(push <message>)',
 	showHelp: false,
 	execute(message, args) {
-		if (message.author.id !== config.users.xaari) return message.reply("Hm? That spell is too powerful for you to use, buddy.");
+		if (message.author.id !== config.xaari) return message.reply("Hm? That spell is too powerful for you to use, buddy.");
 		if (args[0] === "force") return execc(message.channel, `git reset --hard origin/master`);
 		if (args[0] === "push") {
 			if (!args[1]) return message.reply("Give me a commit message!");
