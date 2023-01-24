@@ -58,6 +58,8 @@ client.on('ready', () => {
 			if (client.channels.cache.get('735207428299161602') !== undefined) client.channels.cache.get('735207428299161602').send(config.moduleName + " ᴇʀʀᴏʀ: `" + error + "`");
 		}
 	});
+	client.user.setStatus('invisible');
+
 	if (client.channels.cache.get('894203532092264458') !== undefined) client.channels.cache.get('894203532092264458').send('Twitch module started!');
 });
 
