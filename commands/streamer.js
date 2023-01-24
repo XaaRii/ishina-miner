@@ -1,6 +1,7 @@
 const { AttachmentBuilder } = require('discord.js');
 const config = require("../.cfg.json");
 const request = require('request');
+const { inspect } = require('util');
 const getToken = "https://id.twitch.tv/oauth2/token",
 	apiLink = "https://api.twitch.tv/helix/streams";
 
@@ -29,7 +30,7 @@ module.exports = {
 				if (err) { return console.log(err); }
 				if (res.statusCode !== 200) return message.reply(`\`ERROR\` HTTP STATUS: ${res.statusCode}, it should be 200!`);
 				console.log(JSON.parse(body));
-				const atc = new AttachmentBuilder(Buffer.from(JSON.parse(body)), { name: streamerName + '.txt' });
+				const atc = new AttachmentBuilder(Buffer.from(inspect(JSON.parse(body))), { name: streamerName + '.txt' });
 				return message.channel.send({ content: "Here are the results:", files: [atc] });
 			});
 		}
