@@ -28,6 +28,7 @@ module.exports = {
 			var streamRequest = request.get(streamOptions, async (err, res, body) => {
 				if (err) { return console.log(err); }
 				if (res.statusCode !== 200) return message.reply(`\`ERROR\` HTTP STATUS: ${res.statusCode}, it should be 200!`);
+				console.log(JSON.parse(body));
 				const atc = new AttachmentBuilder(Buffer.from(JSON.parse(body)), { name: streamerName + '.txt' });
 				return message.channel.send({ content: "Here are the results:", files: [atc] });
 			});
