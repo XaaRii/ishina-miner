@@ -3,7 +3,7 @@ const config = require("../.cfg.json");
 const request = require('request');
 const { inspect } = require('util');
 const getToken = "https://id.twitch.tv/oauth2/token",
-	apiLink = "https://api.twitch.tv/helix/";
+	apiLink = "https://api.twitch.tv/helix/users";
 
 module.exports = {
 	name: 'streamer',
@@ -18,7 +18,7 @@ module.exports = {
 
 		async function twitchRequest(accessToken) {
 			var streamOptions = {
-				url: apiLink + "/" + streamerName + "/channel",
+				url: apiLink + "?user_login=" + streamerName,
 				method: 'GET',
 				headers: {
 					'Client-ID': config.CLIENT_ID,
