@@ -18,7 +18,7 @@ module.exports = {
 
 		async function twitchRequest(accessToken) {
 			var streamOptions = {
-				url: apiLink + "?user_login=" + streamerName,
+				url: apiLink + "?login=" + streamerName,
 				method: 'GET',
 				headers: {
 					'Client-ID': config.CLIENT_ID,
@@ -28,9 +28,7 @@ module.exports = {
 			if (!accessToken) return console.warn("I am not able to grab myself a token, maybe try checking configs?");
 			var twitchRequest = request.get(streamOptions, async (err, res, body) => {
 				if (err) { return console.log(err); }
-				if (res.statusCode !== 200) {
-					return message.reply(`\`ERROR\` HTTP STATUS: ${res.statusCode}, it should be 200!\n${body.message}`);
-				}
+				if (res.statusCode !== 200) return message.reply(`\`ERROR\` HTTP STATUS: ${res.statusCode}, it should be 200!\n${body}`);
 				console.log(JSON.parse(body));
 				const atc = new AttachmentBuilder(Buffer.from(inspect(JSON.parse(body))), { name: streamerName + '.txt' });
 				return message.channel.send({ content: "Here are the results:", files: [atc] });
