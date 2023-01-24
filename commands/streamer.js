@@ -11,7 +11,7 @@ module.exports = {
 	usage: '(streamer name)',
 	showHelp: false,
 	async execute(message, args) {
-		if (message.guild.id !== "582953986089287691") return message.reply("I'm sorry, but this command is only for use on Brainstorm.");
+		if (!message.guild || message.guild.id !== "582953986089287691") return message.reply("I'm sorry, but this command is only for use on Brainstorm.");
 		if (!args[0]) return message.reply('Please provide a streamer name.');
 		const streamerName = args[0];
 		if (!/^[a-zA-Z0-9_]{4,25}$/.test(streamerName)) return message.reply('Please provide a valid streamer name.');
