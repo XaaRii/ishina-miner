@@ -16,7 +16,7 @@ module.exports = {
 		const streamerName = args[0];
 		if (!/^[a-zA-Z0-9_]{4,25}$/.test(streamerName)) return message.reply('Please provide a valid streamer name.');
 
-		async function request(accessToken) {
+		async function twitchRequest(accessToken) {
 			var streamOptions = {
 				url: apiLink + "/" + streamerName + "/channel",
 				method: 'GET',
@@ -26,7 +26,7 @@ module.exports = {
 				},
 			};
 			if (!accessToken) return console.warn("I am not able to grab myself a token, maybe try checking configs?");
-			var request = request.get(streamOptions, async (err, res, body) => {
+			var twitchRequest = request.get(streamOptions, async (err, res, body) => {
 				if (err) { return console.log(err); }
 				if (res.statusCode !== 200) return message.reply(`\`ERROR\` HTTP STATUS: ${res.statusCode}, it should be 200!`);
 				console.log(JSON.parse(body));
@@ -50,7 +50,7 @@ module.exports = {
 			if (err) {
 				return console.log(err);
 			}
-			await request(body.access_token);
+			await twitchRequest(body.access_token);
 		});
 	},
 };
