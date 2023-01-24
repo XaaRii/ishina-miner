@@ -3,7 +3,7 @@ const config = require("../.cfg.json");
 const request = require('request');
 const { inspect } = require('util');
 const getToken = "https://id.twitch.tv/oauth2/token",
-	apiLink = "https://api.twitch.tv/helix/streams";
+	apiLink = "https://api.twitch.tv/helix/";
 
 module.exports = {
 	name: 'streamer',
@@ -16,9 +16,9 @@ module.exports = {
 		const streamerName = args[0];
 		if (!/^[a-zA-Z0-9_]{4,25}$/.test(streamerName)) return message.reply('Please provide a valid streamer name.');
 
-		async function streamRequest(accessToken) {
+		async function request(accessToken) {
 			var streamOptions = {
-				url: apiLink + "?user_login=" + streamerName,
+				url: apiLink + "/" + streamerName + "/channel",
 				method: 'GET',
 				headers: {
 					'Client-ID': config.CLIENT_ID,
@@ -26,7 +26,7 @@ module.exports = {
 				},
 			};
 			if (!accessToken) return console.warn("I am not able to grab myself a token, maybe try checking configs?");
-			var streamRequest = request.get(streamOptions, async (err, res, body) => {
+			var request = request.get(streamOptions, async (err, res, body) => {
 				if (err) { return console.log(err); }
 				if (res.statusCode !== 200) return message.reply(`\`ERROR\` HTTP STATUS: ${res.statusCode}, it should be 200!`);
 				console.log(JSON.parse(body));
@@ -50,7 +50,7 @@ module.exports = {
 			if (err) {
 				return console.log(err);
 			}
-			await streamRequest(body.access_token);
+			await request(body.access_token);
 		});
 	},
 };
