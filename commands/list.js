@@ -25,14 +25,14 @@ module.exports = {
 
 			function runListBuild(victlist, n, d) {
 				if (n < d.length) {
-					if (d[n].tmcomment !== "") victlist.push(`'${escapeMarkdown(d[n].tmvictim)}'   (${escapeMarkdown(d[n].tmcomment)})`);
-					else victlist.push(`'${escapeMarkdown(d[n].tmvictim)}'`);
+					if (d[n].tmcomment !== "") victlist.push(`- ${escapeMarkdown(d[n].tmvictim)}    (${escapeMarkdown(d[n].tmcomment)})`);
+					else victlist.push(`- ${escapeMarkdown(d[n].tmvictim)}`);
 					return runListBuild(victlist, (n + 1), d);
 				}
 				const vlready = victlist.join("\n");
 				embed.setTitle(docs[0].tmusername + "'s miner")
 					.addFields([{
-						name: `The list of usernames your miner mines on:`, value: vlready, inline: false,
+						name: `The list of usernames your miner mines on:`, value: "```\n" + vlready + "\n```", inline: false,
 					}])
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
