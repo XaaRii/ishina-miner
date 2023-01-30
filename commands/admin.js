@@ -96,8 +96,8 @@ module.exports = {
 		}
 		function runListBuild(victlist, n, d, embed, tmusername) {
 			if (n < d.length) {
-				if (d[n].tmcomment !== "") victlist.push("`" + escapeMarkdown(d[n].tmvictim) + "` (" + d[n].tmcomment + ")");
-				else victlist.push(`'${d[n].tmvictim}'`);
+				if (d[n].tmcomment !== "") victlist.push(`'${escapeMarkdown(d[n].tmvictim)}'   (${escapeMarkdown(d[n].tmcomment)})`);
+				else victlist.push(`'${escapeMarkdown(d[n].tmvictim)}'`);
 				return runListBuild(victlist, (n + 1), d, embed, tmusername);
 			}
 			const vlready = victlist.join("\n");
