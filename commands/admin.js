@@ -1,6 +1,6 @@
 const config = require("../.cfg.json");
 const { tmmachines, tmvictimlist, passblock, client } = require('../exports.js');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 const fs = require('fs');
 
 module.exports = {
@@ -103,7 +103,7 @@ module.exports = {
 			const vlready = victlist.join("\n");
 			embed.setTitle(tmusername + "'s miner")
 				.addFields([{
-					name: `The list of usernames your miner mines on:`, value: vlready, inline: false,
+					name: `The list of usernames your miner mines on:`, value: escapeMarkdown(vlready), inline: false,
 				}])
 				.setTimestamp();
 			message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });

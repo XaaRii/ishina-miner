@@ -1,7 +1,7 @@
 const config = require("../.cfg.json");
 var prefix = config.prefix;
 var { tmmachines, tmvictimlist } = require('../exports.js');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 
 module.exports = {
 	name: 'list',
@@ -32,7 +32,7 @@ module.exports = {
 				const vlready = victlist.join("\n");
 				embed.setTitle(docs[0].tmusername + "'s miner")
 					.addFields([{
-						name: `The list of usernames your miner mines on:`, value: vlready, inline: false,
+						name: `The list of usernames your miner mines on:`, value: escapeMarkdown(vlready), inline: false,
 					}])
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
