@@ -1,7 +1,7 @@
 const config = require("../.cfg.json");
 var prefix = config.prefix;
 var { tmmachines, tmvictimlist } = require('../exports.js');
-const { EmbedBuilder, escapeMarkdown } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
 	name: 'list',
@@ -25,8 +25,8 @@ module.exports = {
 
 			function runListBuild(victlist, n, d) {
 				if (n < d.length) {
-					if (d[n].tmcomment !== "") victlist.push(`- ${escapeMarkdown(d[n].tmvictim)}    (${escapeMarkdown(d[n].tmcomment)})`);
-					else victlist.push(`- ${escapeMarkdown(d[n].tmvictim)}`);
+					if (d[n].tmcomment !== "") victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
+					else victlist.push(`- ${d[n].tmvictim}`);
 					return runListBuild(victlist, (n + 1), d);
 				}
 				const vlready = victlist.join("\n");
