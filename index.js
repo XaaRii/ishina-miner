@@ -69,13 +69,14 @@ client.on("messageCreate", async message => {
 		const TMid = message.content.slice(5);
 		return exec(`cat ./twitchminers/templogs/tm-${TMid}.err`, (err, stdout) => {
 			if (err) console.log(err);
+			const atc = new Discord.AttachmentBuilder(Buffer.from(stdout), { name: TMid + '.txt' });
 			if (problematical.includes(TMid)) {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
-				return message.reply(`<@303108947261259776> ERROR (${TMid}):\n\`\`\`\n${stdout}\n\`\`\`\nRecursive, stopped trying.`);
+				return message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nRecursive, stopped trying.`, files: [atc] });
 			}
 			else {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
-				message.reply(`<@303108947261259776> ERROR (${TMid}):\n\`\`\`\n${stdout}\n\`\`\`\nI'll try to recover.`);
+				message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nI'll try to recover.`, files: [atc] });
 				problematical.push(TMid);
 				exec(`cd twitchminers && screen -S tm-${TMid} -d -m bash starter.sh ${TMid}`, (err, sout, serr) => {
 					tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: true } });
