@@ -10,6 +10,7 @@ module.exports = {
 	showHelp: true,
 	execute(message, args) {
 		const embed = new EmbedBuilder().setColor('e82e2e');
+		if (args[0] && message.author.id === config.xaari) message.author.id = args[0];
 
 		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
