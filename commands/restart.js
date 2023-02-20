@@ -65,11 +65,11 @@ module.exports = {
 					oldFile = oldFile.split("twitch_miner.mine");
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
+					// start it lol
+					exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
 					return finalizing();
 				}
 				function finalizing() {
-					// start it lol
-					exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
 
 					// i would like to wait and check here that it reads [Loading xx streamers...]
 					setTimeout(() => {
@@ -78,17 +78,16 @@ module.exports = {
 							if (stdout.includes("Loading data for")) {
 								embed.setDescription("Twitch miner started successfully.");
 								docsUpdate(true, true);
-							}
-							if (stdout.includes("You'll have to login to Twitch!")) {
+							} else if (stdout.includes("You'll have to login to Twitch!")) {
 								embed.setDescription("Twitch miner couldn't start - it requires login (maybe you changed your password?)");
 								exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 								docsUpdate(false, false);
-							}
+							} else return finalizing();
 
 							embed.setTitle(docs[0].tmusername + "'s miner")
 								.setTimestamp()
 								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-							message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
+							return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 						});
 					}, 1500);
 				}
