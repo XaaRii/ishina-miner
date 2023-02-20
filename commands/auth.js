@@ -71,7 +71,7 @@ module.exports = {
 			}
 			function finalizing() {
 				console.info("finalizing1");
-				exec(`cd twitchminers && screen -S tm-${authorid} -d -m python run${authorid}.py`, function (err, stdout, stderr) {
+				exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`, function (err, stdout, stderr) {
 					if (err) console.log(err);
 					setTimeout(() => {
 						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (err, stdout, stderr) {

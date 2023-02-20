@@ -6,7 +6,7 @@ const { client } = require('./exports.js');
 const fs = require("fs");
 const config = require('./.cfg.json');
 var { tmmachines, tmvictimlist } = require('./exports.js');
-var prefix = config.prefix;
+var prefix = config.prefix, problematical = [];
 
 // Commands init
 client.commands = new Discord.Collection();
@@ -39,7 +39,7 @@ client.on('ready', () => {
 			for (let i = 0; i < docs.length; i++) {
 				if (!runningTM.includes(docs[i].tmowner) && docs[i].tmrunning && docs[i].tmpassworded) {
 					// start it lol
-					exec(`cd twitchminers && screen -S tm-${docs[i].tmowner} -d -m python run${docs[i].tmowner}.py`, (err, sout, serr) => {
+					exec(`cd twitchminers && screen -S tm-${docs[i].tmowner} -d -m bash starter.sh ${docs[i].tmowner}`, (err, sout, serr) => {
 						if (err) console.log(err);
 						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
@@ -64,7 +64,29 @@ client.on('ready', () => {
 });
 
 client.on("messageCreate", async message => {
-	if (message.content === "Module check!" && message.channel.id === "894204559306674177") return message.channel.send({ content: config.moduleName });
+	if (message.channel.id === "894204559306674177" && message.content === "Module check!") return message.channel.send({ content: config.moduleName });
+	if (message.channel.id === "1028704236738981968" && message.content.startsWith("TMERR")) {
+		const TMid = message.content.slice(5);
+		return exec(`cat ./twitchminers/templogs/tm-${TMid}.err`, (err, stdout) => {
+			if (err) console.log(err);
+			if (problematical.includes(TMid)) {
+				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
+				return message.reply(`<@303108947261259776> ERROR (${TMid}):\n\`\`\`\n${stdout}\n\`\`\`\nRecursive, stopped trying.`);
+			}
+			else {
+				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
+				message.reply(`<@303108947261259776> ERROR (${TMid}):\n\`\`\`\n${stdout}\n\`\`\`\nI'll try to recover.`);
+				problematical.push(TMid);
+				exec(`cd twitchminers && screen -S tm-${TMid} -d -m bash starter.sh ${TMid}`, (err, sout, serr) => {
+					tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: true } });
+					if (err) console.log(err);
+				});
+				return setTimeout(() => {
+					problematical = problematical.filter(x => x !== TMid);
+				}, 300000);
+			}
+		});
+	}
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
