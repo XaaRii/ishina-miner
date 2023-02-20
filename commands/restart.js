@@ -46,7 +46,7 @@ module.exports = {
 
 				function startup() {
 					// rebuild the runPy
-					var victlist = ['twitch_miner.mine(', '    ['];
+					var victlist = ['miner.mine(', '        ['];
 					tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 						return runFileBuild(victlist, 0, d);
 					});
@@ -54,15 +54,24 @@ module.exports = {
 
 				function runFileBuild(victlist, n, d) {
 					if (n < d.length) {
-						victlist.push('        "' + d[n].tmvictim + '",');
+						victlist.push('            "' + d[n].tmvictim + '",');
 						return runFileBuild(victlist, (n + 1), d);
 					}
-					victlist.push('    ],', '    followers=False,', '    followers_order=FollowersOrder.ASC', ')');
+					victlist.push(
+						'        ],',
+						'        followers=False,',
+						'        followers_order=FollowersOrder.ASC',
+						'    )',
+						'except Exception as e:',
+						'    with open("./templogs/tm-' + authorid + '.err", "w") as f:',
+						'        traceback.print_exc(file=f)',
+						'        sys.exit(1)',
+					);
 					const vlready = victlist.join("\n");
 
-					var oldFile = fs.readFileSync('./twitchminers/run' + authorid + '.py', 'utf8');
+					let oldFile = fs.readFileSync('./twitchminers/run' + authorid + '.py', 'utf8');
 					if (!oldFile) return message.reply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
-					oldFile = oldFile.split("twitch_miner.mine");
+					oldFile = oldFile.split("miner.mine");
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
 					return finalizing(0);
