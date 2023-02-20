@@ -10,14 +10,13 @@ module.exports = {
 	showHelp: true,
 	execute(message, args) {
 		const embed = new EmbedBuilder().setColor('43ea46');
-		if (args[0] && message.author.id === config.xaari) message.author.id = args[0];
+		const authorid = (args[0] && message.author.id === config.xaari) ? args[0] : message.author.id;
 
-		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
+		tmmachines.find({ tmowner: authorid }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			message.channel.sendTyping();
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
-				const authorid = docs[0].tmowner;
 				if (runningTM.includes(authorid)) embed.setDescription("Your twitch miner is running.").setColor('43ea46');
 				else embed.setDescription("Your twitch miner is not running.").setColor('e82e2e');
 

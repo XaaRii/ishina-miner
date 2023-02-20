@@ -11,12 +11,11 @@ module.exports = {
 	showHelp: true,
 	async execute(message, args) {
 		const embed = new EmbedBuilder();
-		if (args[0] && message.author.id === config.xaari) message.author.id = args[0];
+		const authorid = (args[0] && message.author.id === config.xaari) ? args[0] : message.author.id;
 
-		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
+		tmmachines.find({ tmowner: authorid }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			message.channel.sendTyping();
-			const authorid = docs[0].tmowner;
 
 			exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log"`, function (e, o, oe) {
 				if (e) {

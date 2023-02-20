@@ -9,7 +9,9 @@ module.exports = {
 	showHelp: true,
 	execute(message, args) {
 		const embed = new EmbedBuilder().setColor('ffbf00');
-		tmmachines.find({ tmowner: message.author.id }, function (err, docs) {
+		const authorid = (args[0] && message.author.id === config.xaari) ? args[0] : message.author.id;
+
+		tmmachines.find({ tmowner: authorid }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			var victlist = [];
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
