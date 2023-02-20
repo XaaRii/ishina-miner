@@ -65,11 +65,11 @@ module.exports = {
 					oldFile = oldFile.split("twitch_miner.mine");
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
-					// start it lol
-					exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
-					return finalizing();
+					return finalizing(0);
 				}
-				function finalizing() {
+				function finalizing(i) {
+					// start it lol
+					if (i < 1) exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
 
 					// i would like to wait and check here that it reads [Loading xx streamers...]
 					setTimeout(() => {
@@ -82,7 +82,7 @@ module.exports = {
 								embed.setDescription("Twitch miner couldn't start - it requires login (maybe you changed your password?)");
 								exec("screen -S tm-" + authorid + " -X stuff $'\003'");
 								docsUpdate(false, false);
-							} else return finalizing();
+							} else return finalizing((i++));
 
 							embed.setTitle(docs[0].tmusername + "'s miner")
 								.setTimestamp()
