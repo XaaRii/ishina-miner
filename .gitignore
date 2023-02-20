@@ -12,3 +12,6 @@ tmmachines.db
 tmvictimlist.db
 twitchminers/*
 !twitchminers/runDefault.py
+!twitchminers/starter.sh
+twitchminers/templogs/*
+!twitchminers/templogs/
