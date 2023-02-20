@@ -22,7 +22,7 @@ module.exports = {
 				if (e) {
 					// process stopped
 					embed.setDescription("Twitch miner is not running.")
-						.setColor('43ea46')
+						.setColor('e82e2e')
 						.setTitle(docs[0].tmusername + "'s miner")
 						.setTimestamp()
 						.setFooter({ text: `Need help? type ${prefix}help (command)!` });
