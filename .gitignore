@@ -8,8 +8,7 @@ primecheck/__pycache__
 primecheck/prime_fetch.json
 primecheck/prime_fetch_old.json
 
-tmmachines.db
-tmvictimlist.db
+*.db
 twitchminers/*
 !twitchminers/runDefault.py
 !twitchminers/starter.sh
