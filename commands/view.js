@@ -16,42 +16,42 @@ module.exports = {
 		tmmachines.find({ tmowner: authorid }, async function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			message.channel.sendTyping();
-       var viewMsg;
-       await spectator(0, viewMsg);
+			var viewMsg;
+			await spectator(0, viewMsg);
 
-       async function spectator(i, viewMsg) {
-			exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log"`, async function (e, o, oe) {
-				if (e) {
-					// process stopped
-					if (i < 5) embed.setDescription("Twitch miner is not running.\nNext refresh in 10 seconds. (" + i + "/5)");
-           else embed.setDescription("Twitch miner is not running.");
+			async function spectator(i, viewMsg) {
+				exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log"`, async function (e, o, oe) {
+					if (e) {
+						// process stopped
+						if (i < 5) embed.setDescription("Twitch miner is not running.\nNext refresh in 10 seconds. (" + i + "/5)");
+						else embed.setDescription("Twitch miner is not running.");
 						embed.setColor('e82e2e')
-						.setTitle(docs[0].tmusername + "'s miner")
-						.setTimestamp()
-						.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-					return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
-				} else {
-					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, async function (ee, oo, ooee) {
-						if (ee) return message.reply("Something fucked up, please report to Pawele.");
-					  if (i < 5) embed.setDescription("Next refresh in 10 seconds. (" + i + "/5)");
-             else embed.setDescription("Closed view (" + i + "/5)");
-						embed.setColor('43ea46')
 							.setTitle(docs[0].tmusername + "'s miner")
-							.setFields([
-								{
-									name: `Twitch miner output:`, value: oo, inline: false,
-								},
-							])
 							.setTimestamp()
 							.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-					   if (i < 1) viewMsg = await message.channel.send({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
-              else viewMsg.edit({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
-              if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg) }, 10000) }
-              else return;
-					});
-				}
-			});
-}
+						return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
+					} else {
+						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, async function (ee, oo, ooee) {
+							if (ee) return message.reply("Something fucked up, please report to Pawele.");
+							if (i < 5) embed.setDescription("Next refresh in 10 seconds. (" + i + "/5)");
+							else embed.setDescription("Closed view (" + i + "/5)");
+							embed.setColor('43ea46')
+								.setTitle(docs[0].tmusername + "'s miner")
+								.setFields([
+									{
+										name: `Twitch miner output:`, value: oo, inline: false,
+									},
+								])
+								.setTimestamp()
+								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+							if (i < 1) viewMsg = await message.channel.send({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+							else viewMsg.edit({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+							if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
+							else return;
+						});
+					}
+				});
+			}
 		});
 	},
 };
