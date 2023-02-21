@@ -1,0 +1,16 @@
+.cfg.json
+.eslintrc.json
+package-lock.json
+node_modules
+
+primecheck/chromedriver
+primecheck/__pycache__
+primecheck/prime_fetch.json
+primecheck/prime_fetch_old.json
+
+*.db
+twitchminers/*
+!twitchminers/runDefault.py
+!twitchminers/starter.sh
+twitchminers/templogs/*
+!twitchminers/templogs/

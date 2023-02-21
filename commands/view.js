@@ -10,7 +10,6 @@ module.exports = {
 	aliases: ["read", "open"],
 	showHelp: true,
 	async execute(message, args) {
-		const embed = new EmbedBuilder();
 		const authorid = (args[0] && message.author.id === config.xaari) ? args[0] : message.author.id;
 
 		tmmachines.find({ tmowner: authorid }, async function (err, docs) {
@@ -20,6 +19,7 @@ module.exports = {
 			await spectator(0, viewMsg);
 
 			async function spectator(i, viewMsg) {
+	    	const embed = new EmbedBuilder();
 				exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log"`, async function (e, o, oe) {
 					if (e) {
 						// process stopped
@@ -51,8 +51,7 @@ module.exports = {
 						setTimeout(() => {
 							return spectator((i + 1), viewMsg);
 						}, 5000);
-					}
-					else return;
+					} else return;
 				});
 			}
 		});
