@@ -3,10 +3,11 @@ require('console-stamp')(console);
 const Discord = require("discord.js");
 const { REST, Routes } = require('discord.js');
 const { client } = require('./exports.js');
+var { recentBlock } = require('./exports.js');
 const fs = require("fs");
 const config = require('./.cfg.json');
 var { tmmachines, tmvictimlist } = require('./exports.js');
-var prefix = config.prefix, problematical = [];
+var prefix = config.prefix;
 
 // Commands init
 client.commands = new Discord.Collection();
@@ -70,20 +71,20 @@ client.on("messageCreate", async message => {
 		return exec(`cat ./twitchminers/templogs/tm-${TMid}.err`, (err, stdout) => {
 			if (err) console.log(err);
 			const atc = new Discord.AttachmentBuilder(Buffer.from(stdout), { name: TMid + '.txt' });
-			if (problematical.includes(TMid)) {
+			if (recentBlock.includes(TMid)) {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
-				return message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nRecursive, stopped trying.`, files: [atc] });
+				return message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nWithout restart.`, files: [atc] });
 			}
 			else {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
 				message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nI'll try to recover.`, files: [atc] });
-				problematical.push(TMid);
+				recentBlock.push(TMid);
 				exec(`cd twitchminers && screen -S tm-${TMid} -d -m bash starter.sh ${TMid}`, (err, sout, serr) => {
 					tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: true } });
 					if (err) console.log(err);
 				});
 				return setTimeout(() => {
-					problematical = problematical.filter(x => x !== TMid);
+					recentBlock = recentBlock.filter(x => x !== TMid);
 				}, 300000);
 			}
 		});

@@ -1,6 +1,6 @@
 const config = require("../.cfg.json");
 var prefix = config.prefix;
-var { tmmachines, tmvictimlist } = require('../exports.js');
+var { tmmachines, tmvictimlist, recentBlock } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -16,6 +16,10 @@ module.exports = {
 		tmmachines.find({ tmowner: authorid }, function (err, docs) {
 			if (docs.length < 1) return message.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			if (!docs[0].tmpassworded) return message.reply("Your miner is missing cookies file. Please use `" + prefix + "auth` to finish the setup");
+			if (!recentBlock.includes(authorid)) {
+				recentBlock.push(authorid);
+				setTimeout(() => { recentBlock = recentBlock.filter(x => x !== authorid); }, 30000);
+			}
 			message.channel.sendTyping();
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
