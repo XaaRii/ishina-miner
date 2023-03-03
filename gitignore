@@ -3,10 +3,11 @@
 package-lock.json
 node_modules
 
-primecheck/chromedriver
-primecheck/__pycache__
-primecheck/prime_fetch.json
-primecheck/prime_fetch_old.json
+!checkers/*
+checkers/prime_checker.py
+checkers/campaign_checker.py
+checkers/primecheck.sh
+checkers/setup-info
 
 *.db
 twitchminers/*
