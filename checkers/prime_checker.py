@@ -24,7 +24,7 @@ def get_html_data() -> BeautifulSoup:
 
     # Start browser
     # originally was there also   service=ChromeService(ChromeDriverManager().install()),
-    driver = webdriver.Chrome(executable_path='/home/ubuntu/checkers/chromedriver', options=options)
+    driver = webdriver.Chrome(executable_path='/home/ubuntu/ishina-miner/checkers/chromedriver', options=options)
 
     # Get html from website
     driver.get("https://gaming.amazon.com/home")
