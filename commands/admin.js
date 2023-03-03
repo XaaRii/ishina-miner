@@ -1,5 +1,4 @@
-const config = require("../.cfg.json");
-const { tmmachines, tmvictimlist, passblock, client } = require('../exports.js');
+const { tmmachines, tmvictimlist, misc, client } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
@@ -23,7 +22,7 @@ module.exports = {
 			fs.unlink('../passblocked', function () {
 				console.info("Block disabled");
 				message.reply("Block disabled");
-				passblock.find({ }, function (err, docs) {
+				misc.find({ passblock: { $exists: true } }, function (err, docs) {
 					return sendiary(client, docs, 0, msg);
 				});
 			});
@@ -121,8 +120,5 @@ function sendiary(client, docs, i, msg) {
 		setTimeout(() => {
 			return sendiary(client, docs, (i + 1), msg);
 		}, 3000);
-	} else {
-		passblock.remove({ }, { multi: true });
-	}
-	return;
+	} else return misc.remove({ passblock: { $exists: true } }, { multi: true });
 }

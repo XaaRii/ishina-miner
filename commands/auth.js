@@ -13,10 +13,10 @@ module.exports = {
 	execute(message, args) {
 		if (fs.existsSync("../passblocked")) return passblock(message);
 		function passblock(message) {
-			const { passblock } = require('../exports.js');
-			passblock.find({ who: message.author.id }, function (err, docs) {
+			const { misc } = require('../exports.js');
+			misc.find({ passblock: { who: message.author.id } }, function (err, docs) {
 				if (docs.length < 1) {
-					passblock.insert({ "who": message.author.id }, (err) => {
+					misc.insert({ passblock: { "who": message.author.id } }, (err) => {
 						if (err) return message.reply("Something fucked up while trying to write down your name to remind you later about availability of this command:\n" + err);
 					});
 				}
