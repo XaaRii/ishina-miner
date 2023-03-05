@@ -21,30 +21,15 @@ module.exports = {
 				setTimeout(() => { recentBlock = recentBlock.filter(x => x !== authorid); }, 30000);
 			}
 			message.channel.sendTyping();
-			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
+			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, async function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
+				var viewMsg = 0;
 				if (runningTM.includes(authorid)) return wasRunning();
 				return startup();
 
-				function wasRunning() {
+				async function wasRunning() {
 					exec("screen -S tm-" + authorid + " -X stuff $'\003'");
-					message.channel.send("Initiated shutdown... please wait a moment for it to close all channels.");
-					return loopcheck();
-				}
-
-				function loopcheck() {
-					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log"`, function (e, o, oe) {
-							if (e) {
-								// process stopped, yaay
-								docsUpdate(false, true);
-								return startup();
-							} else {
-								message.channel.sendTyping();
-								return loopcheck();
-							}
-						});
-					}, 4000);
+					return spectR(0, 0);
 				}
 
 				function startup() {
@@ -77,31 +62,73 @@ module.exports = {
 					oldFile = oldFile.split("miner.mine");
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
-					return finalizing(0);
+					exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
+					return spectR(0, 1);
 				}
-				function finalizing(i) {
-					// start it lol
-					if (i < 1) exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
 
-					// i would like to wait and check here that it reads [Loading xx streamers...]
-					setTimeout(() => {
-						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 5 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
-							if (err) return message.channel.send("Something fucked up, contact Pawele, he will help ya.");
-							if (stdout.includes("Loading data for")) {
-								embed.setDescription("Twitch miner started successfully.");
-								docsUpdate(true, true);
-							} else if (stdout.includes("You'll have to login to Twitch!")) {
-								embed.setDescription("Twitch miner couldn't start - it requires login (maybe you changed your password?)");
-								exec("screen -S tm-" + authorid + " -X stuff $'\003'");
-								docsUpdate(false, false);
-							} else return finalizing((i++));
-
-							embed.setTitle(docs[0].tmusername + "'s miner")
+				async function spectR(i, mode) {
+					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, async function (e, o, oe) {
+						var finito = false;
+						if (e) {
+							// process stopped
+							if (!mode) {
+								docsUpdate(false, true);
+								finito = true;
+							}
+							mode ? embed.setDescription("Twitch miner is not running. (" + i + "/6)") : embed.setDescription("Twitch miner is not running.");
+							embed.setColor('e82e2e')
+								.setTitle(docs[0].tmusername + "'s miner")
 								.setTimestamp()
 								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-							return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
-						});
-					}, 1500);
+						} else {
+							if (mode) {
+								if (i < 6) embed.setDescription("Next refresh in 10 seconds. (" + i + "/6)");
+								else embed.setDescription("Closed view (" + i + "/6)");
+								if (o.includes("Loading data for")) {
+									docsUpdate(true, true);
+									var running = true;
+								}
+								else if (o.includes("You'll have to login to Twitch!")) {
+									embed.setDescription("Twitch miner couldn't start! (maybe you changed your password?)");
+									finito = true;
+									exec("screen -S tm-" + authorid + " -X stuff $'\003'");
+									docsUpdate(false, false);
+								}
+							} else embed.setDescription("Still running...");
+							embed.setColor('43ea46')
+								.setTitle(docs[0].tmusername + "'s miner")
+								.setFields([
+									{
+										name: `Twitch miner output:`, value: o, inline: false,
+									},
+								])
+								.setTimestamp()
+								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+						}
+						if (mode) {
+							var cont = running ? cont = "Twitch miner is running!" : "Starting up...";
+							if (!viewMsg) {
+								viewMsg = await message.channel.send({ content: cont, embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+							} else viewMsg.edit({ content: cont, embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+							if (finito) return;
+							if (i < 6) {
+								setTimeout(() => {
+									return spectR((i + 1), mode);
+								}, 5000);
+							} else return;
+						} else {
+							const msgObj = { content: "Initiated shutdown... please wait a moment for it to close all channels.", embeds: [embed] };
+							if (!viewMsg) {
+								viewMsg = await message.channel.send(msgObj).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+							} else viewMsg.edit(msgObj).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+							if (finito) return startup();
+							else {
+								setTimeout(() => {
+									return spectR((i + 1), mode);
+								}, 3000);
+							}
+						}
+					});
 				}
 
 				function docsUpdate(runValue, pwValue) {

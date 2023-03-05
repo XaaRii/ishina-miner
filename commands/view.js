@@ -7,7 +7,7 @@ const { exec } = require('child_process');
 module.exports = {
 	name: 'view',
 	description: 'View latest few lines from your miner.',
-	aliases: ["read", "open"],
+	aliases: ["read", "open", "status"],
 	showHelp: true,
 	async execute(message, args) {
 		const embed = new EmbedBuilder();
