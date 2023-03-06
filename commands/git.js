@@ -13,7 +13,7 @@ module.exports = {
 		if (args[0] === "push") {
 			if (!args[1]) return message.reply("Give me a commit message!");
 			const commitMsg = args.slice(1).join(" ");
-			return execc(message.channel, `git add . & git commit -m"${commitMsg}" & git push`);
+			return execc(message.channel, `git add . && git commit -m"${commitMsg}" && git push`);
 		}
 		return execc(message.channel, `git config pull.ff only\ngit pull`);
 	},

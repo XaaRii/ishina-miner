@@ -1,0 +1,17 @@
+.cfg.json
+.eslintrc.json
+package-lock.json
+node_modules
+
+!checkers/*
+checkers/prime_checker.py
+checkers/campaign_checker.py
+checkers/primecheck.sh
+checkers/setup-info
+
+*.db
+twitchminers/*
+!twitchminers/runDefault.py
+!twitchminers/starter.sh
+twitchminers/templogs/*
+!twitchminers/templogs/

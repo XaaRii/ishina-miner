@@ -13,7 +13,7 @@ module.exports = {
 		const embed = new EmbedBuilder();
 		var backupUsed = false;
 		const embedBackup = new EmbedBuilder();
-		const file = JSON.parse(fs.readFileSync("./primecheck/prime_fetch.json", 'utf8'));
+		const file = JSON.parse(fs.readFileSync("./checkers/prime_fetch.json", 'utf8'));
 		const data = file.data;
 
 		for (let i = 0; i < data.length; i++) {
