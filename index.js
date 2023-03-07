@@ -1,7 +1,6 @@
 splash();
 require('console-stamp')(console);
-const Discord = require("discord.js");
-const { REST, Routes } = require('discord.js');
+const { Collection, Events, AttachmentBuilder, REST, Routes } = require('discord.js');
 const { client } = require('./exports.js');
 var { recentBlock } = require('./exports.js');
 const fs = require("fs");
@@ -10,7 +9,7 @@ var { tmmachines, tmvictimlist } = require('./exports.js');
 var prefix = config.prefix;
 
 // Commands init
-client.commands = new Discord.Collection();
+client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -18,19 +17,18 @@ for (const file of commandFiles) {
 }
 
 // Slash commands init
-const slashcommands = [];
-client.slashcmds = new Discord.Collection();
-const slashcmdFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
-for (const file of slashcmdFiles) {
+client.slashCollection = new Collection();
+const slashCollectionFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
+for (const file of slashCollectionFiles) {
 	const command = require(`./slashcmds/${file}`);
-	client.slashcmds.set(command.name, command);
-	slashcommands.push(command);
+	client.slashCollection.set(command.data.name, command);
 }
+const rest = new REST({ version: '10' }).setToken(config.dcToken);
 
 const { exec } = require('child_process');
 const { inspect } = require('util');
 
-client.on('ready', () => {
+client.on(Events.ClientReady, () => {
 	console.info(`Logged in as ${client.user.tag}!`);
 	console.info(`I am a module [${config.moduleName}] with prefix ${config.prefix}`);
 	exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
@@ -64,13 +62,13 @@ client.on('ready', () => {
 	if (client.channels.cache.get('894203532092264458') !== undefined) client.channels.cache.get('894203532092264458').send('Twitch module started!');
 });
 
-client.on("messageCreate", async message => {
+client.on(Events.MessageCreate, async message => {
 	if (message.channel.id === "894204559306674177" && message.content === "Module check!") return message.channel.send({ content: config.moduleName });
 	if (message.channel.id === "1028704236738981968" && message.content.startsWith("TMERR")) {
 		const TMid = message.content.slice(5);
 		return exec(`cat ./twitchminers/templogs/tm-${TMid}.err`, (err, stdout) => {
 			if (err) console.log(err);
-			const atc = new Discord.AttachmentBuilder(Buffer.from(stdout), { name: TMid + '.txt' });
+			const atc = new AttachmentBuilder(Buffer.from(stdout), { name: TMid + '.txt' });
 			if (recentBlock.includes(TMid)) {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
 				return message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nWithout restart.`, files: [atc] });
@@ -111,9 +109,7 @@ client.on("messageCreate", async message => {
 			}
 			message.reply("Command list reloaded.");
 			break;
-		case "crash":
-		// fall through
-		case "fs":
+		case "crash": case "fs":
 			if (message.author.id === config.xaari) {
 				var whoasked = message.author.username;
 				if (commandName === "fs") { // fs
@@ -141,33 +137,46 @@ client.on("messageCreate", async message => {
 		case "deploy":
 			if (!config.admins.includes(message.author.id)) return;
 			if (args[0] === "local") {
-				message.channel.sendTyping();
-				await message.guild.commands
-					.set(client.slashcmds)
-					.then(async () => {
-						console.log(`deploy on ${message.guild.name} on ${message.author.username}'s request.`);
-						message.reply("Slash commands deployed successfully~");
-					})
-					.catch(err => {
-						message.channel.send('Could not deploy commands!\n' + err);
-						console.log(err);
-					});
-			} else if (args[0] === "global") {
-				var wannabetoken, wannabeappid;
-				wannabetoken = config.init.dcToken;
-				wannabeappid = config.init.dcAppID;
-				const rest = new REST({ version: '10' }).setToken(wannabetoken);
 				try {
-					console.log(`deploy of ${slashcommands.length} slash commands globally on ${message.author.username}'s request.`);
-					const data = await rest.put(
-						Routes.applicationCommands(wannabeappid),
-						{ body: slashcommands },
-					);
-					message.reply("Slash commands deployed successfully~\nChanges may take a bit longer to proceed tho...");
+					const slashCommands = [];
+					client.slashCollection = new Collection();
+					var i = 0;
+					const slashFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
+					for (const file of slashFiles) {
+						const command = require(`./slashcmds/${file}`).data.toJSON();
+						client.slashCollection.set(command.data.name, command);
+						args[1] === "overwrite" ? slashCommands.push(command) : await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command });
+						i++;
+					}
+					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
+					if (args[1] !== "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID, message.guildId), { body: slashCommands });
+					message.reply(i + " slash commands deployed successfully on this server~");
 				} catch (error) {
+					message.channel.send('Could not deploy commands!\n' + error);
 					console.error(error);
 				}
-			} else return message.channel.send("Missing argument: local/global");
+			} else if (args[0] === "global") {
+				try {
+					const slashPubCommands = [];
+					client.slashCollection = new Collection();
+					i = 0;
+					const slashFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
+					for (const file of slashFiles) {
+						const command = require(`./slashcmds/${file}`).data.toJSON();
+						client.slashCollection.set(command.data.name, command);
+						if (!command.developer) {
+							args[1] === "overwrite" ? slashPubCommands.push(command) : await rest.post(Routes.applicationCommands(config.dcAppID), { body: command });
+							i++;
+						}
+					}
+					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
+					if (args[1] !== "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID), { body: slashPubCommands });
+					message.reply(i + " slash commands deployed successfully~\nChanges may take a bit longer to proceed tho...");
+				} catch (error) {
+					message.reply("Could not deploy commands!\n" + error);
+					console.error(error);
+				}
+			} else return message.channel.send("Missing argument: local/global (overwrite)");
 			break;
 	}
 	var command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
@@ -188,17 +197,23 @@ client.on("messageCreate", async message => {
 
 });
 
-client.on('interactionCreate', async interaction => {
+client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
-	const command = client.slashcmds.get(interaction.commandName.toLowerCase());
+	const command = client.slashCollection.get(interaction.commandName);
+	if (!command) return; // Not meant for us
+	if (command.developer && interaction.user.id !== config.xaari) {
+		return interaction.reply({
+			content: "This command is only available to the developer (and you look like someone who can't even make 'Hello world' program).",
+			ephemeral: true,
+		});
+	}
 	try {
-		if (!command) return; // Not meant for us
-		command.execute(interaction, client);
+		command.execute(interaction);
 	} catch (error) {
 		console.error(error);
 		interaction.followUp({
-			content: 'There was an error trying to execute that command:\n' + error,
+			content: 'There was an error trying to execute that command:\n' + error, ephemeral: true,
 		});
 	}
 });
@@ -233,9 +248,12 @@ async function execcall(msgchannel, cmd) {
 		if (!stdout) {
 			m.edit("Done.");
 		} else if (stdout.length >= 1950) {
-			const atc = new Discord.AttachmentBuilder(Buffer.from(stdout), { name: 'rpicmd.txt' });
+			const atc = new AttachmentBuilder(Buffer.from(stdout), { name: 'rpicmd.txt' });
 			m.edit({ content: "Done! Here are the results:", files: [atc] });
-		} else m.edit({ content: "Done! Here are the results:\n" + stdout + stderr });
+		} else m.edit({ content: "Done! Here are the results:\n" + stdout });
+		if (error !== null) {
+			msgchannel.send("ᴇʀʀᴏʀ: `" + stderr + "`");
+		}
 	});
 }
 
@@ -246,7 +264,7 @@ async function evalcall(args, message) {
 			evaled = await eval(args.slice(1).join(' '));
 			if (evaled !== undefined) {
 				if (inspect(evaled).length >= 1970) {
-					const atc = new Discord.AttachmentBuilder(Buffer.from(inspect(evaled)), { name: 'eval.txt' });
+					const atc = new AttachmentBuilder(Buffer.from(inspect(evaled)), { name: 'eval.txt' });
 					message.channel.send({ content: "Evaluation too long, so instead i'll send a file containing result.:", files: [atc] });
 				} else message.channel.send(inspect(evaled));
 				console.log(inspect(evaled));
