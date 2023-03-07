@@ -51,7 +51,9 @@ module.exports = {
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
 					exec(`cd twitchminers && screen -S tm-${authorid} -d -m bash starter.sh ${authorid}`);
-					return spectR(0, 1);
+					setTimeout(() => {
+						return spectR(0, 1);
+					}, 1000);
 				}
 
 				async function spectR(i, mode) {
@@ -83,6 +85,7 @@ module.exports = {
 									docsUpdate(false, false);
 								}
 							} else embed.setDescription("Still running...");
+							const output = o || "[empty output]";
 							embed.setColor('43ea46')
 								.setTitle(docs[0].tmusername + "'s miner")
 								.setFields([
