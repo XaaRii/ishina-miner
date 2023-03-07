@@ -6,8 +6,8 @@ const { exec } = require('child_process');
 
 module.exports = {
 	name: 'view',
-	description: 'View latest few lines from your miner.',
-	aliases: ["read", "open", "status"],
+	description: 'View latest output from your miner.',
+	aliases: ["read", "open"],
 	showHelp: true,
 	async execute(message, args) {
 		const embed = new EmbedBuilder();
@@ -30,9 +30,9 @@ module.exports = {
 							.setTimestamp()
 							.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 						if (i < 1) viewMsg = await message.channel.send({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
-							else viewMsg.edit({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
-							if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
-							else return;
+						else viewMsg.edit({ embeds: [embed] }).catch(er => { message.reply({ content: "something fucked up, " + er }); });
+						if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
+						else return;
 					} else {
 						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, async function (ee, oo, ooee) {
 							if (ee) return message.reply("Something fucked up, please report to Pawele.");
