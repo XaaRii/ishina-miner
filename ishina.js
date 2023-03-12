@@ -126,7 +126,7 @@ client.on(Events.MessageCreate, async message => {
 			var cmd = args.join(' ').toString();
 			message.channel.sendTyping();
 			if (msgauthor === config.xaari) {
-				if (args[0] === "rpicmd") return execcall(message.channel, cmd);
+				if (commandName === "rpicmd") return execcall(message.channel, cmd);
 				else return evalcall(args, message);
 			} else return message.reply("**ᴀᴄᴄᴇꜱꜱ ᴅᴇɴɪᴇᴅ**, get lost.");
 		case "deploy":
