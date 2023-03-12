@@ -12,6 +12,9 @@ try {
 	} else if (err instanceof ReferenceError) {
 		console.log("----------------------------------------\nReferenceError detected! Booting into ᴇᴍᴇʀɢᴇɴᴄʏ ᴍᴏᴅᴇ...");
 		emergency("ReferenceError");
+	} else if (err.code === 'ENOENT') {
+		console.log("----------------------------------------\n'File not found' Error detected! Booting into ᴇᴍᴇʀɢᴇɴᴄʏ ᴍᴏᴅᴇ...");
+		emergency("'File not found' Error");
 	} else return console.log(err);
 }
 
