@@ -138,8 +138,8 @@ client.on(Events.MessageCreate, async message => {
 					var i = 0;
 					const slashFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
 					for (const file of slashFiles) {
-						const command = require(`./slashcmds/${file}`).data.toJSON();
-						client.slashCollection.set(command.data.name, command);
+						const command = require(`./slashcmds/${file}`);
+						client.slashCollection.set(command.data.name, command.data.toJSON());
 						args[1] === "overwrite" ? slashCommands.push(command) : await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command });
 						i++;
 					}
@@ -157,8 +157,8 @@ client.on(Events.MessageCreate, async message => {
 					i = 0;
 					const slashFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
 					for (const file of slashFiles) {
-						const command = require(`./slashcmds/${file}`).data.toJSON();
-						client.slashCollection.set(command.data.name, command);
+						const command = require(`./slashcmds/${file}`);
+						client.slashCollection.set(command.data.name, command.data.toJSON());
 						if (!command.developer) {
 							args[1] === "overwrite" ? slashPubCommands.push(command) : await rest.post(Routes.applicationCommands(config.dcAppID), { body: command });
 							i++;
