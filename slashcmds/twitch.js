@@ -2,7 +2,7 @@ const { SlashCommandBuilder, Collection } = require('discord.js'),
 	fs = require("fs");
 // Slash commands init
 const subCommands = new Collection();
-const subFiles = fs.readdirSync('./twitch').filter(file => file.endsWith('.js'));
+const subFiles = fs.readdirSync('./slashcmds/twitch').filter(file => file.endsWith('.js'));
 for (const file of subFiles) {
 	const command = require(`./twitch/${file}`);
 	subCommands.set(command.name, command);
