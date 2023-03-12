@@ -1,4 +1,4 @@
-const prefix = require("../.cfg.json").prefix;
+const prefix = require(".cfg.json").prefix;
 var { tmmachines, tmvictimlist, recentBlock } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
