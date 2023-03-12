@@ -130,7 +130,7 @@ client.on(Events.MessageCreate, async message => {
 				else return evalcall(args, message);
 			} else return message.reply("**ᴀᴄᴄᴇꜱꜱ ᴅᴇɴɪᴇᴅ**, get lost.");
 		case "deploy":
-			if (!config.admins.includes(message.author.id)) return;
+			if (message.author.id === config.xaari) return;
 			if (args[0] === "local") {
 				try {
 					const slashCommands = [];
