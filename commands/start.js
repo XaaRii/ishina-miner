@@ -72,7 +72,7 @@ module.exports = {
 								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 						} else {
 							if (mode) {
-								if (i < 6) embed.setDescription("Next refresh in 10 seconds. (" + i + "/6)");
+								if (i < 6) embed.setDescription("Next refresh in 5 seconds. (" + i + "/6)");
 								else embed.setDescription("Closed view (" + i + "/6)");
 								if (o.includes("Loading data for")) {
 									docsUpdate(true, true);
@@ -90,7 +90,7 @@ module.exports = {
 								.setTitle(docs[0].tmusername + "'s miner")
 								.setFields([
 									{
-										name: `Twitch miner output:`, value: o, inline: false,
+										name: `Twitch miner output:`, value: output, inline: false,
 									},
 								])
 								.setTimestamp()
