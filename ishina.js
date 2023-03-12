@@ -144,7 +144,7 @@ client.on(Events.MessageCreate, async message => {
 						i++;
 					}
 					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
-					if (args[1] !== "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID, message.guildId), { body: slashCommands });
+					if (args[1] === "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID, message.guildId), { body: slashCommands });
 					message.reply(i + " slash commands deployed successfully on this server~");
 				} catch (error) {
 					message.channel.send('Could not deploy commands!\n' + error);
@@ -165,7 +165,7 @@ client.on(Events.MessageCreate, async message => {
 						}
 					}
 					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
-					if (args[1] !== "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID), { body: slashPubCommands });
+					if (args[1] === "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID), { body: slashPubCommands });
 					message.reply(i + " slash commands deployed successfully~\nChanges may take a bit longer to proceed tho...");
 				} catch (error) {
 					message.reply("Could not deploy commands!\n" + error);
