@@ -5,15 +5,13 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	name: "add",
 	async execute(interaction) {
-		interaction.deferReply();
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: interaction.user.id }, function (err, docs) {
-			if (err) console.log(err);
-			if (docs.length < 1) return interaction.editReply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
-			const streamers = interaction.options.getString({ name: streamers }), comment = interaction.options.getString({ name: comment }) || "";
-			if (!streamers) return interaction.editReply("What streamers you wanna add?");
+			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
+			const streamers = interaction.options.getString('streamers'), comment = interaction.options.getString('comment') ?? 'No reason provided';
+			if (!streamers) return interaction.reply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], description = [];
-			const al = streamers.join(" ").replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
+			const al = streamers.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) return runAddNames(0);
@@ -34,7 +32,7 @@ module.exports = {
 						"tmusername": docs[0].tmusername,
 						"tmvictim": al[n].toLowerCase(),
 						"tmcomment": comment,
-					}, function (err) { if (err) return interaction.editReply("Error happened!", err); });
+					}, function (err) { if (err) return interaction.reply("Error happened!", err); });
 
 					newlyJoined.push(al[n]);
 					currlist.push(al[n].toLowerCase());
@@ -57,7 +55,7 @@ module.exports = {
 					.setDescription(description.join(""))
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-				return interaction.editReply({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
+				return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 			}
 		});
 	},

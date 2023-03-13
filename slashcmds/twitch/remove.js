@@ -5,14 +5,13 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	name: "remove",
 	async execute(interaction) {
-		interaction.deferReply();
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: interaction.user.id }, function (err, docs) {
-			if (docs.length < 1) return interaction.editReply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
-			const streamers = interaction.options.getString({ name: streamers });
-			if (!streamers) return interaction.editReply("Who you wanna remove? (check out /twitch list)");
+			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
+			const streamers = interaction.options.getString('streamers');
+			if (!streamers) return interaction.reply("Who you wanna remove? (check out /twitch list)");
 			var newlyDeleted = [], currlist = [], description = [];
-			const al = streamers.join(" ").replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
+			const al = streamers.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) {
@@ -34,7 +33,7 @@ module.exports = {
 					if (!currlist.includes(al[n].toLowerCase())) return runRemoveNames((n + 1));
 
 					tmvictimlist.remove({ tmusername: docs[0].tmusername, tmvictim: al[n].toLowerCase() }, function (err) {
-						if (err) return interaction.editReply("Error happened!", err);
+						if (err) return interaction.reply("Error happened!", err);
 					});
 
 					newlyDeleted.push(al[n]);
@@ -56,7 +55,7 @@ module.exports = {
 					.setDescription(description.join(""))
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-				return interaction.editReply({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
+				return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 			}
 		});
 	},
