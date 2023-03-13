@@ -5,13 +5,13 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 	name: "add",
 	async execute(interaction) {
+		interaction.deferReply();
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: interaction.user.id }, function (err, docs) {
 			if (err) console.log(err);
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
+			if (docs.length < 1) return interaction.editReply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			const streamers = interaction.options.getString({ name: streamers }), comment = interaction.options.getString({ name: comment }) || "";
-			if (!streamers) return interaction.reply("What streamers you wanna add?");
-			interaction.deferReply();
+			if (!streamers) return interaction.editReply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], description = [];
 			const al = streamers.join(" ").replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
 
