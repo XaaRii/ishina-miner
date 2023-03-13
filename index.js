@@ -15,7 +15,10 @@ try {
 	} else if (err.code === 'ENOENT') {
 		console.log("----------------------------------------\n'File not found' Error detected! Booting into ᴇᴍᴇʀɢᴇɴᴄʏ ᴍᴏᴅᴇ...");
 		emergency("'File not found' Error");
-	} else return console.log(err);
+	} else {
+		console.log(err);
+		emergency("unknownError");
+	}
 }
 
 async function splash() {
