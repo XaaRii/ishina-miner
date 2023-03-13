@@ -16,7 +16,7 @@ module.exports = {
 			interaction.deferReply();
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
-				if (runningTM.includes(authorid)) return interaction.reply("Your miner is already running. Perhaps you meant `/twitch restart`?");
+				if (runningTM.includes(authorid)) return interaction.editReply("Your miner is already running. Perhaps you meant `/twitch restart`?");
 				var viewMsg = 0;
 
 				// rebuild the runPy
@@ -43,7 +43,7 @@ module.exports = {
 					const vlready = victlist.join("\n");
 
 					let oldFile = fs.readFileSync('./twitchminers/run' + authorid + '.py', 'utf8');
-					if (!oldFile) return interaction.reply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
+					if (!oldFile) return interaction.editReply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
 					oldFile = oldFile.split("miner.mine");
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
@@ -96,7 +96,7 @@ module.exports = {
 						if (mode) {
 							var cont = running ? cont = "Twitch miner is running!" : "Starting up...";
 							if (!viewMsg) {
-								viewMsg = await interaction.reply({ content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
+								viewMsg = await interaction.editReply({ content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
 							} else interaction.editReply({ content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
 							if (finito) return;
 							if (i < 6) {
@@ -106,9 +106,7 @@ module.exports = {
 							} else return;
 						} else {
 							const msgObj = { content: "Initiated shutdown... please wait a moment for it to close all channels.", embeds: [embed] };
-							if (!viewMsg) {
-								viewMsg = await interaction.reply(msgObj).catch(er => console.log("something fucked up, " + er));
-							} else interaction.editReply(msgObj).catch(er => console.log("something fucked up, " + er));
+							interaction.editReply(msgObj).catch(er => console.log("something fucked up, " + er));
 							if (finito) return; // startup();
 							else {
 								setTimeout(() => {

@@ -19,9 +19,9 @@ module.exports = {
 			interaction.deferReply();
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
-				if (!runningTM.includes(authorid)) return interaction.reply("Your miner is already down.");
+				if (!runningTM.includes(authorid)) return interaction.editReply("Your miner is already down.");
 				exec("screen -S tm-" + authorid + " -X stuff $'\003'");
-				interaction.reply("Initiated shutdown... please wait a moment for it to close all channels.");
+				interaction.editReply("Initiated shutdown... please wait a moment for it to close all channels.");
 				loopcheck();
 
 				function loopcheck() {

@@ -25,13 +25,13 @@ module.exports = {
 							.setTitle(docs[0].tmusername + "'s miner")
 							.setTimestamp()
 							.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-						if (i < 1) viewMsg = await interaction.reply({ embeds: [embed] }).catch(er => { interaction.reply({ content: "something fucked up, " + er }); });
-						else viewMsg.edit({ embeds: [embed] }).catch(er => { interaction.reply({ content: "something fucked up, " + er }); });
+						if (i < 1) viewMsg = await interaction.editReply({ embeds: [embed] }).catch(er => { interaction.editReply({ content: "something fucked up, " + er }); });
+						else viewMsg.edit({ embeds: [embed] }).catch(er => { interaction.editReply({ content: "something fucked up, " + er }); });
 						if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
 						else return;
 					} else {
 						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, async function (ee, oo, ooee) {
-							if (ee) return interaction.reply("Something fucked up, please report to Pawele.");
+							if (ee) return interaction.editReply("Something fucked up, please report to Pawele.");
 							if (i < 5) embed.setDescription("Next refresh in 10 seconds. (" + i + "/5)");
 							else embed.setDescription("Closed view (" + i + "/5)");
 							embed.setColor('43ea46')
@@ -43,8 +43,7 @@ module.exports = {
 								])
 								.setTimestamp()
 								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-							if (i < 1) viewMsg = await interaction.reply({ embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
-							else interaction.editReply({ embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
+							interaction.editReply({ embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
 							if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
 							else return;
 						});
