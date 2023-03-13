@@ -1,5 +1,5 @@
 const prefix = require("../../.cfg.json").prefix;
-var { tmmachines, tmvictimlist } = require('../exports.js');
+var { tmmachines, tmvictimlist } = require('../../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -9,7 +9,7 @@ module.exports = {
 	async execute(interaction) {
 		if (fs.existsSync("../passblocked")) return passblock();
 		function passblock() {
-			const { misc } = require('../exports.js');
+			const { misc } = require('../../exports.js');
 			misc.find({ passblock: { who: interaction.user.id } }, function (err, docs) {
 				if (docs.length < 1) {
 					misc.insert({ passblock: { "who": interaction.user.id } }, (err) => {

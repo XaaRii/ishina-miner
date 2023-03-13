@@ -1,5 +1,5 @@
 const prefix = require("../../.cfg.json").prefix;
-var { tmmachines } = require('../exports.js');
+var { tmmachines } = require('../../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const { exec } = require('child_process');
 
