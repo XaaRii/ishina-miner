@@ -12,6 +12,32 @@ module.exports = {
 		.setName('twitch')
 		.setDescription('Twitch miner module!')
 		.addSubcommand(subcommand => subcommand
+			.setName('prime')
+			.setDescription('Check out current offers on Twitch Prime.'),
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('create')
+			.setDescription('Register your own twitch miner!')
+			.addStringOption(option =>
+				option.setName('username')
+					.setDescription('your twitch username')
+					.setRequired(true),
+			),
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('destroy')
+			.setDescription('Unregister your twitch miner.')
+			.addStringOption(option =>
+				option.setName('confirm')
+					.setDescription('put your twitch username here to confirm')
+					.setRequired(false),
+			),
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('auth')
+			.setDescription('Authorize your twitch miner.'),
+		)
+		.addSubcommand(subcommand => subcommand
 			.setName('start')
 			.setDescription('Start your miner.'),
 		)
@@ -26,6 +52,10 @@ module.exports = {
 		.addSubcommand(subcommand => subcommand
 			.setName('view')
 			.setDescription('View latest output from your miner.'),
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('status')
+			.setDescription('Status of your miner.'),
 		)
 		.addSubcommand(subcommand => subcommand
 			.setName('add')

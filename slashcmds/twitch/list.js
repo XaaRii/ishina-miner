@@ -9,7 +9,7 @@ module.exports = {
 		const authorid = interaction.user.id;
 
 		tmmachines.find({ tmowner: authorid }, function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
+			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			var victlist = [];
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) {
