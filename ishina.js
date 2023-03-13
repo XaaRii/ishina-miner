@@ -211,6 +211,10 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
+process.on('uncaughtException', (reason) => {
+	console.log(reason);
+	if (client.channels.cache.get('735207428299161602') !== undefined) client.channels.cache.get('735207428299161602').send(config.moduleName + ': `UncaughtException:`\n' + reason);
+});
 process.on('unhandledRejection', (reason) => {
 	console.log(reason);
 	if (client.channels.cache.get('735207428299161602') !== undefined) client.channels.cache.get('735207428299161602').send(config.moduleName + ': `Unhandled promise rejection:`\n' + reason);
