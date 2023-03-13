@@ -5,7 +5,7 @@ var { recentBlock } = require('./exports.js');
 const fs = require("fs");
 const config = require('./.cfg.json');
 var { tmmachines, tmvictimlist } = require('./exports.js');
-var prefix = config.prefix;
+var prefix = config.prefix, prefixAlias = config.prefixAlias;
 
 // Commands init
 client.commands = new Collection();
@@ -86,7 +86,7 @@ client.on(Events.MessageCreate, async message => {
 			}
 		});
 	}
-	if (!message.content.toLowerCase().startsWith(prefix) || message.author.bot) return;
+	if (!([prefix, prefixAlias].some(p => message.content.toLowerCase().startsWith(p))) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
