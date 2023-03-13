@@ -14,15 +14,15 @@ module.exports = {
 		const command = message.client.slashCollection.get(commandName);
 		if (!command) return message.channel.send(`That's not a command I would know, ${message.author}!`);
 
-		delete require.cache[require.resolve(`./${command.name}.js`)];
+		delete require.cache[require.resolve(`../slashcmds/${commandName}.js`)];
 
 		try {
-			const newCommand = require(`./${command.name}.js`);
-			message.client.slashCollection.set(newCommand.name, newCommand);
-			message.channel.send(`Command \`${command.name}\` reloaded!`);
+			const newCommand = require(`../slashcmds/${commandName}.js`);
+			message.client.slashCollection.set(newCommand.data.name, newCommand);
+			message.channel.send(`Command \`${command.data.name}\` reloaded!`);
 		} catch (error) {
 			console.log(error);
-			message.channel.send(`I've got an error while reloading that \`${command.name}\` command:\n\`${error.message}\``);
+			message.channel.send(`I've got an error while reloading that \`${command.data.name}\` command:\n\`${error.message}\``);
 		}
 	},
 };
