@@ -11,6 +11,7 @@ module.exports = {
 			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			const streamers = interaction.options.getString({ name: streamers }), comment = interaction.options.getString({ name: comment }) || "";
 			if (!streamers) return interaction.reply("What streamers you wanna add?");
+			interaction.deferReply();
 			var newlyJoined = [], currlist = [], description = [];
 			const al = streamers.join(" ").replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
 
@@ -33,7 +34,7 @@ module.exports = {
 						"tmusername": docs[0].tmusername,
 						"tmvictim": al[n].toLowerCase(),
 						"tmcomment": comment,
-					}, function (err) { if (err) return interaction.reply("Error happened!", err); });
+					}, function (err) { if (err) return interaction.editReply("Error happened!", err); });
 
 					newlyJoined.push(al[n]);
 					currlist.push(al[n].toLowerCase());
@@ -56,7 +57,7 @@ module.exports = {
 					.setDescription(description.join(""))
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-				return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
+				return interaction.editReply({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
 			}
 		});
 	},

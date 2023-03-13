@@ -10,6 +10,7 @@ module.exports = {
 			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
 			const streamers = interaction.options.getString({ name: streamers });
 			if (!streamers) return interaction.reply("Who you wanna remove? (check out /twitch list)");
+			interaction.deferReply();
 			var newlyDeleted = [], currlist = [], description = [];
 			const al = streamers.join(" ").replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
 
@@ -33,7 +34,7 @@ module.exports = {
 					if (!currlist.includes(al[n].toLowerCase())) return runRemoveNames((n + 1));
 
 					tmvictimlist.remove({ tmusername: docs[0].tmusername, tmvictim: al[n].toLowerCase() }, function (err) {
-						if (err) return interaction.reply("Error happened!", err);
+						if (err) return interaction.editReply("Error happened!", err);
 					});
 
 					newlyDeleted.push(al[n]);
@@ -55,7 +56,7 @@ module.exports = {
 					.setDescription(description.join(""))
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-				return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
+				return interaction.editReply({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
 			}
 		});
 	},
