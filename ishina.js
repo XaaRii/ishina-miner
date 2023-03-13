@@ -29,7 +29,7 @@ const { inspect } = require('util');
 
 client.on(Events.ClientReady, () => {
 	console.info(`Logged in as ${client.user.tag}!`);
-	console.info(`I am a module [${config.moduleName}] with prefix ${config.prefix}`);
+	console.info(`I am a module [${config.moduleName}] with prefix ${config.prefix} (${config.prefixAlias})`);
 	exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 		const runningTM = stdout.split("\n");
 		console.log(runningTM);
@@ -86,9 +86,12 @@ client.on(Events.MessageCreate, async message => {
 			}
 		});
 	}
-	if (!([prefix, prefixAlias].some(p => message.content.toLowerCase().startsWith(p))) || message.author.bot) return;
+	var shorty = false;
+	if (message.author.bot) return;
+	if (message.content.toLowerCase().startsWith(prefixAlias)) shorty = true;
+	else if (!message.content.toLowerCase().startsWith(prefix)) return;
 
-	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const args = shorty ? message.content.slice(prefixAlias.length).trim().split(/ +/) : message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
 	switch (commandName) {
