@@ -7,7 +7,7 @@ module.exports = {
 	async execute(interaction) {
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: interaction.user.id }, function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
+			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			const streamers = interaction.options.getString('streamers'), comment = interaction.options.getString('comment') ?? 'No reason provided';
 			if (!streamers) return interaction.reply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], description = [];
@@ -46,7 +46,7 @@ module.exports = {
 
 				if (docs[0].tmrunning) newlyJoined.length ? description.push("\n\n**Changes are pending. To apply them, please restart your miner.** (`/twitch restart`)") : newlyJoined = [];
 				else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `/twitch start`)");
-				else description.push("\n\n**Now all that's left is authorizing your miner (one-time process)** - `" + prefix + "auth`\nYou can do so even in DM's, so don't worry.");
+				else description.push("\n\n**Now all that's left is authorizing your miner (one-time process)** - `/twitch auth`\nYou can do so even in DM's, so don't worry.");
 
 				return sendmessage();
 			}

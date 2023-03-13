@@ -11,8 +11,8 @@ module.exports = {
 		const authorid = interaction.user.id;
 
 		tmmachines.find({ tmowner: authorid }, function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
-			if (!docs[0].tmpassworded) return interaction.reply("Your miner is missing cookies file. Please use `" + prefix + "auth` to finish the setup");
+			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
+			if (!docs[0].tmpassworded) return interaction.reply("Your miner is missing cookies file. Please use `/twitch auth` to finish the setup");
 			if (!recentBlock.includes(authorid)) {
 				recentBlock.push(authorid);
 				setTimeout(() => { recentBlock = recentBlock.filter(x => x !== authorid); }, 30000);

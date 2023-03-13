@@ -10,7 +10,7 @@ module.exports = {
 		const authorid = interaction.user.id;
 
 		tmmachines.find({ tmowner: authorid }, async function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `" + prefix + "create <username>`");
+			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			interaction.deferReply();
 			var viewMsg;
 			await spectator(0, viewMsg);
