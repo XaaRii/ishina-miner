@@ -45,7 +45,7 @@ module.exports = {
 			.setName('remove')
 			.setDescription('Removes streamer(s) from mining list.')
 			.addStringOption(option =>
-				option.setName('prompt')
+				option.setName('streamers')
 					.setDescription('streamer usernames - example: streamer1 streamer2 streamer3')
 					.setRequired(true),
 			),
