@@ -84,7 +84,6 @@ module.exports = {
 					setTimeout(() => {
 						exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 10 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
 							console.info("prompted a hardcopy:");
-							if (stdout) console.log(stdout);
 							if (err) {
 								if (stdout.includes("There are several suitable screens on")) {
 									return message.channel.send("This should not be happening! There are multiple sessions opened, contact Pawele and he will manually fix it.");
@@ -213,7 +212,6 @@ module.exports = {
 					}
 					message.channel.sendTyping();
 					exec(`screen -S tm-${authorid} -X hardcopy "./templogs/${authorid}.log" && sleep 1 && tac ./twitchminers/templogs/${authorid}.log | grep -m 9 '[[:blank:]]' | tac`, function (err, stdout, stderr) {
-						if (stdout) console.info(stdout);
 						// with the old password approach this shouldn't happen
 					//	if (err) {
 					//		console.log("finalizing3 hardcopy -\n" + err);
