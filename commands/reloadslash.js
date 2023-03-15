@@ -12,7 +12,7 @@ module.exports = {
 	async execute(message, args) {
 		if (message.author.id !== config.xaari) return;
 		if (!args.length) return message.reply("I don't know what command you wanna reload!");
-		if (!["g", "l", "n"].some(v => args[1].includes(v))) return message.reply("g/l/n ?");
+		if (!args[1] || !["g", "l", "n"].some(v => args[1].includes(v))) return message.reply("g/l/n ?");
 		message.channel.sendTyping();
 		const commandName = args[0].toLowerCase();
 		const command = message.client.slashCollection.get(commandName);
