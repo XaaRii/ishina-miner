@@ -10,17 +10,15 @@ module.exports = {
 		const isFollowUp = interaction.options.getBoolean('restart') ?? false;
 		const embed = new EmbedBuilder().setColor('43ea46');
 		const authorid = interaction.user.id;
-
-		var followUpMessage;
 		function response(i, msg) {
 			if (isFollowUp) {
-				if (!followUpMessage) followUpMessage = interaction.followUp(msg).catch(er => console.log("something fucked up, " + er));
+				if (!followUpMessage) var followUpMessage = interaction.followUp(msg).catch(er => console.log("something fucked up, " + er));
 				else followUpMessage.edit(msg).catch(er => console.log("something fucked up, " + er));
 			} else if (i) interaction.reply(msg).catch(er => console.log("something fucked up, " + er));
 			else interaction.editReply(msg).catch(er => console.log("something fucked up, " + er));
 		}
 
-		if (isFollowUp) await new Promise(resolve => setTimeout(resolve, 5000));
+		if (isFollowUp) await new Promise(resolve => setTimeout(resolve, 3000));
 
 		tmmachines.find({ tmowner: authorid }, function (err, docs) {
 			if (docs.length < 1) return response(1, "Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
