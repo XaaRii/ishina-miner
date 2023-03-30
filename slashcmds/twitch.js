@@ -69,6 +69,11 @@ module.exports = {
 				option.setName('comment')
 					.setDescription('optional comment')
 					.setRequired(false),
+			)
+			.addBooleanOption(option =>
+				option.setName('restart?')
+					.setDescription('check this if you want to restart miner as well')
+					.setRequired(false),
 			),
 		)
 		.addSubcommand(subcommand => subcommand
@@ -78,6 +83,11 @@ module.exports = {
 				option.setName('streamers')
 					.setDescription('streamer usernames - example: streamer1 streamer2 streamer3')
 					.setRequired(true),
+			)
+			.addBooleanOption(option =>
+				option.setName('restart?')
+					.setDescription('check this if you want to restart miner as well')
+					.setRequired(false),
 			),
 		)
 		.addSubcommand(subcommand => subcommand
@@ -87,8 +97,13 @@ module.exports = {
 	async execute(interaction) {
 		const command = subCommands.get(interaction.options.getSubcommand({ required: false }));
 		if (!command) return;
+		const withRestart = interaction.options.getBoolean('restart?') ?? false;
 		try {
-			command.execute(interaction);
+			await command.execute(interaction);
+			if (withRestart) {
+				const restart = subCommands.get('restart?');
+				restart.execute(interaction);
+			}
 		} catch (error) {
 			console.error(error);
 			interaction.followUp({

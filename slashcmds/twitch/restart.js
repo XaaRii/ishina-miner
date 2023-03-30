@@ -7,17 +7,27 @@ const { exec } = require('child_process');
 module.exports = {
 	name: "restart",
 	async execute(interaction) {
+		const isFollowUp = interaction.options.getBoolean('restart?') ?? false;
 		const embed = new EmbedBuilder().setColor('43ea46');
 		const authorid = interaction.user.id;
 
+		var followUpMessage;
+		function response(i, msg) {
+			if (isFollowUp) {
+				if (!followUpMessage) followUpMessage = interaction.followUp(msg);
+				else followUpMessage.edit(msg);
+			} else if (i) interaction.reply(msg);
+			else interaction.editReply(msg);
+		}
+
 		tmmachines.find({ tmowner: authorid }, function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
-			if (!docs[0].tmpassworded) return interaction.reply("Your miner is missing cookies file. Please use `/twitch auth` to finish the setup");
+			if (docs.length < 1) return response(1, "Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
+			if (!docs[0].tmpassworded) return response(1, "Your miner is missing cookies file. Please use `/twitch auth` to finish the setup");
 			if (!recentBlock.includes(authorid)) {
 				recentBlock.push(authorid);
 				setTimeout(() => { recentBlock = recentBlock.filter(x => x !== authorid); }, 30000);
 			}
-			interaction.deferReply();
+			if (!isFollowUp) interaction.deferReply();
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, async function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
 				var viewMsg = 0;
@@ -55,7 +65,9 @@ module.exports = {
 					const vlready = victlist.join("\n");
 
 					let oldFile = fs.readFileSync('./twitchminers/run' + authorid + '.py', 'utf8');
-					if (!oldFile) return interaction.editReply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
+					if (!oldFile) {
+						return response(0, "error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
+					}
 					oldFile = oldFile.split("miner.mine");
 
 					fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
@@ -108,8 +120,8 @@ module.exports = {
 						if (mode) {
 							var cont = running ? cont = "Twitch miner is running!" : "Starting up...";
 							if (!viewMsg) {
-								viewMsg = await interaction.editReply({ content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
-							} else interaction.editReply({ content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
+								viewMsg = await response(0, { content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
+							} else response(0, { content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
 							if (finito) return;
 							if (i < 6) {
 								setTimeout(() => {
@@ -118,7 +130,7 @@ module.exports = {
 							} else return;
 						} else {
 							const msgObj = { content: "Initiated shutdown... please wait a moment for it to close all channels.", embeds: [embed] };
-							interaction.editReply(msgObj).catch(er => console.log("something fucked up, " + er));
+							response(0, msgObj).catch(er => console.log("something fucked up, " + er));
 							if (finito) return startup();
 							else {
 								setTimeout(() => {
