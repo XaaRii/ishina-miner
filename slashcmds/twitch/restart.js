@@ -14,10 +14,10 @@ module.exports = {
 		var followUpMessage;
 		function response(i, msg) {
 			if (isFollowUp) {
-				if (!followUpMessage) followUpMessage = interaction.followUp(msg);
-				else followUpMessage.edit(msg);
-			} else if (i) interaction.reply(msg);
-			else interaction.editReply(msg);
+				if (!followUpMessage) followUpMessage = interaction.followUp(msg).catch(er => console.log("something fucked up, " + er));
+				else followUpMessage.edit(msg).catch(er => console.log("something fucked up, " + er));
+			} else if (i) interaction.reply(msg).catch(er => console.log("something fucked up, " + er));
+			else interaction.editReply(msg).catch(er => console.log("something fucked up, " + er));
 		}
 
 		if (isFollowUp) await new Promise(resolve => setTimeout(resolve, 5000));
@@ -122,8 +122,8 @@ module.exports = {
 						if (mode) {
 							var cont = running ? cont = "Twitch miner is running!" : "Starting up...";
 							if (!viewMsg) {
-								viewMsg = await response(0, { content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
-							} else response(0, { content: cont, embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
+								viewMsg = await response(0, { content: cont, embeds: [embed] });
+							} else response(0, { content: cont, embeds: [embed] });
 							if (finito) return;
 							if (i < 6) {
 								setTimeout(() => {
@@ -132,7 +132,7 @@ module.exports = {
 							} else return;
 						} else {
 							const msgObj = { content: "Initiated shutdown... please wait a moment for it to close all channels.", embeds: [embed] };
-							response(0, msgObj).catch(er => console.log("something fucked up, " + er));
+							response(0, msgObj);
 							if (finito) return startup();
 							else {
 								setTimeout(() => {
