@@ -10,9 +10,11 @@ module.exports = {
 		const isFollowUp = interaction.options.getBoolean('restart') ?? false;
 		const embed = new EmbedBuilder().setColor('43ea46');
 		const authorid = interaction.user.id;
+
+		var followUpMessage = "none";
 		function response(i, msg) {
 			if (isFollowUp) {
-				if (!followUpMessage) var followUpMessage = interaction.followUp(msg).catch(er => console.log("something fucked up, " + er));
+				if (!followUpMessage) followUpMessage = interaction.followUp(msg).catch(er => console.log("something fucked up, " + er));
 				else followUpMessage.edit(msg).catch(er => console.log("something fucked up, " + er));
 			} else if (i) interaction.reply(msg).catch(er => console.log("something fucked up, " + er));
 			else interaction.editReply(msg).catch(er => console.log("something fucked up, " + er));
