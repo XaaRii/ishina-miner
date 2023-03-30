@@ -1,6 +1,6 @@
 --------------------------------------
 crontab setting:
-0 8 * * * /bin/bash /home/ishina-miner/checkers/primecheck.sh
+0 8 * * * /bin/bash /home/ubuntu/ishina-miner/checkers/primecheck.sh
 
 --------------------------------------
 for the correct version of chromedriver search for github repo of 'electron chromedriver' with the same version as is your chrome (that you will install via bash script down below)
