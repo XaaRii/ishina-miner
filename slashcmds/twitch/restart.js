@@ -20,6 +20,8 @@ module.exports = {
 			else interaction.editReply(msg);
 		}
 
+		if (isFollowUp) await new Promise(resolve => setTimeout(resolve, 5000));
+
 		tmmachines.find({ tmowner: authorid }, function (err, docs) {
 			if (docs.length < 1) return response(1, "Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			if (!docs[0].tmpassworded) return response(1, "Your miner is missing cookies file. Please use `/twitch auth` to finish the setup");
