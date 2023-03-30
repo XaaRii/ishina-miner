@@ -7,7 +7,7 @@ const { exec } = require('child_process');
 module.exports = {
 	name: "restart",
 	async execute(interaction) {
-		const isFollowUp = interaction.options.getBoolean('restart?') ?? false;
+		const isFollowUp = interaction.options.getBoolean('restart') ?? false;
 		const embed = new EmbedBuilder().setColor('43ea46');
 		const authorid = interaction.user.id;
 

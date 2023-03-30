@@ -71,7 +71,7 @@ module.exports = {
 					.setRequired(false),
 			)
 			.addBooleanOption(option =>
-				option.setName('restart?')
+				option.setName('restart')
 					.setDescription('check this if you want to restart miner as well')
 					.setRequired(false),
 			),
@@ -85,7 +85,7 @@ module.exports = {
 					.setRequired(true),
 			)
 			.addBooleanOption(option =>
-				option.setName('restart?')
+				option.setName('restart')
 					.setDescription('check this if you want to restart miner as well')
 					.setRequired(false),
 			),
@@ -97,11 +97,11 @@ module.exports = {
 	async execute(interaction) {
 		const command = subCommands.get(interaction.options.getSubcommand({ required: false }));
 		if (!command) return;
-		const withRestart = interaction.options.getBoolean('restart?') ?? false;
+		const withRestart = interaction.options.getBoolean('restart') ?? false;
 		try {
 			await command.execute(interaction);
 			if (withRestart) {
-				const restart = subCommands.get('restart?');
+				const restart = subCommands.get('restart');
 				restart.execute(interaction);
 			}
 		} catch (error) {
