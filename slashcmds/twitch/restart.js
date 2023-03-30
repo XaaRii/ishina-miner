@@ -11,7 +11,7 @@ module.exports = {
 		const embed = new EmbedBuilder().setColor('43ea46');
 		const authorid = interaction.user.id;
 
-		var followUpMessage = "none";
+		var followUpMessage = "";
 		function response(i, msg) {
 			if (isFollowUp) {
 				if (!followUpMessage) followUpMessage = interaction.followUp(msg).catch(er => console.log("something fucked up, " + er));
