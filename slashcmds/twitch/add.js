@@ -44,9 +44,12 @@ module.exports = {
 					if (comment !== "") description.push(" with comment: " + comment);
 				} else description.push("No valid changes, the list stays the same.");
 
-				if (docs[0].tmrunning) newlyJoined.length ? description.push("\n\n**Changes are pending. To apply them, please restart your miner.** (`/twitch restart`)") : newlyJoined = [];
-				else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `/twitch start`)");
-				else description.push("\n\n**Now all that's left is authorizing your miner (one-time process)** - `/twitch auth`\nYou can do so even in DM's, so don't worry.");
+				const withRestart = interaction.options.getBoolean('restart') ?? false;
+				if (!withRestart) {
+					if (docs[0].tmrunning) newlyJoined.length ? description.push("\n\n**Changes are pending. To apply them, please restart your miner.** (`/twitch restart`)") : newlyJoined = [];
+					else if (docs[0].tmpassworded) description.push("\n\n**Friendly reminder: your twitch miner isn't running.** (You can start it with `/twitch start`)");
+					else description.push("\n\n**Now all that's left is authorizing your miner (one-time process)** - `/twitch auth`\nYou can do so even in DM's, so don't worry.");
+				}
 
 				return sendmessage();
 			}
