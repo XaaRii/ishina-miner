@@ -22,14 +22,14 @@ module.exports = {
 
 		if (isFollowUp) await new Promise(resolve => setTimeout(resolve, 3000));
 
-		tmmachines.find({ tmowner: authorid }, function (err, docs) {
+		tmmachines.find({ tmowner: authorid }, async function (err, docs) {
 			if (docs.length < 1) return response(1, "Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			if (!docs[0].tmpassworded) return response(1, "Your miner is missing cookies file. Please use `/twitch auth` to finish the setup");
 			if (!recentBlock.includes(authorid)) {
 				recentBlock.push(authorid);
 				setTimeout(() => { recentBlock = recentBlock.filter(x => x !== authorid); }, 30000);
 			}
-			if (!isFollowUp) interaction.deferReply();
+			if (!isFollowUp) await interaction.deferReply();
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, async function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
 				var viewMsg = 0;
