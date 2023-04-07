@@ -102,6 +102,11 @@ client.on(Events.MessageCreate, async message => {
 				const command = require(`./commands/${file}`);
 				client.commands.set(command.name, command);
 			}
+			commandFiles = fs.readdirSync('./slashcmds').filter(file => file.endsWith('.js'));
+			for (const file of commandFiles) {
+				const command = require(`./slashcmds/${file}`);
+				client.slashCollection.set(command.data.name, command);
+			}
 			message.reply("Command list reloaded.");
 			break;
 		case "crash": case "fs":
