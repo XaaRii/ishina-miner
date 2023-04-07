@@ -84,7 +84,7 @@ async function emergency(errType) {
 					message.channel.send({ content: "Here you go.", files: [args[0]] }).catch(err => {
 						return message.channel.send('I can\'t find that file! sry');
 					});
-				} else message.channel.send("*You tried to pull some bitches, but...*\n  Don't you dare hunt in **my** territory! <:cocoGun:1037328931386298378>");
+				} else message.channel.send("*You tried to pull some bitches, but...*\n  Don't you dare hunt in **my** territory! <a:cocoGun:1037328931386298378>");
 				break;
 			case "fs":
 				if (message.author.id === config.xaari) {
