@@ -134,6 +134,9 @@ client.on(Events.MessageCreate, async message => {
 			} else return message.reply("**ᴀᴄᴄᴇꜱꜱ ᴅᴇɴɪᴇᴅ**, get lost.");
 		case "deploy":
 			if (message.author.id !== config.xaari) return;
+			message.channel.sendTyping();
+			var resp = ['Registering commands in progress...\n'];
+			var progressbar = args[1] !== "overwrite" ? message.reply({ content: resp.join("") }) : undefined;
 			if (args[0] === "local") {
 				try {
 					const slashCommands = [];
@@ -143,14 +146,24 @@ client.on(Events.MessageCreate, async message => {
 					for (const file of slashFiles) {
 						const command = require(`./slashcmds/${file}`);
 						client.slashCollection.set(command.data.name, command);
-						args[1] === "overwrite" ? slashCommands.push(command.data) : await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command.data.toJSON() });
+						if (args[1] === "overwrite") slashCommands.push(command.data);
+						else {
+							await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command.data.toJSON() });
+							resp.push(command.data.name + " ");
+							progressbar.edit(resp.join(""));
+						}
 						i++;
 					}
 					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
 					if (args[1] === "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID, message.guildId), { body: slashCommands });
-					message.reply(i + " slash commands deployed successfully on this server~");
+					if (!progressbar) message.reply(i + " slash commands deployed successfully on this server~");
+					else {
+						resp.push(`\n\n${i} slash commands deployed successfully on this server~`);
+						progressbar.edit(resp.join(""));
+					}
 				} catch (error) {
-					message.channel.send('Could not deploy commands!\n' + error);
+					if (!progressbar) message.channel.send('Could not deploy commands!\n' + error);
+					else progressbar.edit('Could not deploy commands!\n' + error);
 					console.error(error);
 				}
 			} else if (args[0] === "global") {
@@ -163,15 +176,25 @@ client.on(Events.MessageCreate, async message => {
 						const command = require(`./slashcmds/${file}`);
 						client.slashCollection.set(command.data.name, command);
 						if (!command.developer) {
-							args[1] === "overwrite" ? slashPubCommands.push(command.data) : await rest.post(Routes.applicationCommands(config.dcAppID), { body: command.data.toJSON() });
+							if (args[1] === "overwrite") slashPubCommands.push(command.data);
+							else {
+								await rest.post(Routes.applicationCommands(config.dcAppID), { body: command.data.toJSON() });
+								resp.push(command.data.name + " ");
+								progressbar.edit(resp.join(""));
+							}
 							i++;
 						}
 					}
 					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
 					if (args[1] === "overwrite") await rest.put(Routes.applicationCommands(config.dcAppID), { body: slashPubCommands });
-					message.reply(i + " slash commands deployed successfully~\nChanges may take a bit longer to proceed tho...");
+					if (!progressbar) message.reply(i + " slash commands deployed successfully~\nChanges may take a bit longer to proceed tho...");
+					else {
+						resp.push(`\n\n${i} slash commands deployed successfully~\nChanges may take a bit longer to proceed tho...`);
+						progressbar.edit(resp.join(""));
+					}
 				} catch (error) {
-					message.reply("Could not deploy commands!\n" + error);
+					if (!progressbar) message.channel.send('Could not deploy commands!\n' + error);
+					else progressbar.edit('Could not deploy commands!\n' + error);
 					console.error(error);
 				}
 			} else return message.channel.send("Missing argument: local/global (overwrite)");
