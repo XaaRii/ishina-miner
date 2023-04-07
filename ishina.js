@@ -143,7 +143,7 @@ client.on(Events.MessageCreate, async message => {
 					for (const file of slashFiles) {
 						const command = require(`./slashcmds/${file}`);
 						client.slashCollection.set(command.data.name, command);
-						args[1] === "overwrite" ? slashCommands.push(command) : await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command.data.toJSON() });
+						args[1] === "overwrite" ? slashCommands.push(command.data) : await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command.data.toJSON() });
 						i++;
 					}
 					console.log(`deploy of ${i} slash commands globally on ${message.author.username}'s request.`);
@@ -163,7 +163,7 @@ client.on(Events.MessageCreate, async message => {
 						const command = require(`./slashcmds/${file}`);
 						client.slashCollection.set(command.data.name, command);
 						if (!command.developer) {
-							args[1] === "overwrite" ? slashPubCommands.push(command) : await rest.post(Routes.applicationCommands(config.dcAppID), { body: command.data.toJSON() });
+							args[1] === "overwrite" ? slashPubCommands.push(command.data) : await rest.post(Routes.applicationCommands(config.dcAppID), { body: command.data.toJSON() });
 							i++;
 						}
 					}
