@@ -1,5 +1,5 @@
 require('console-stamp')(console);
-const { Collection, Events, AttachmentBuilder, REST, Routes } = require('discord.js');
+const { Collection, Events, AttachmentBuilder, REST, Routes, InteractionType } = require('discord.js');
 const { client } = require('./exports.js');
 var { recentBlock } = require('./exports.js');
 const fs = require("fs");
@@ -217,7 +217,7 @@ client.on(Events.MessageCreate, async message => {
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+	if (interaction.type !== InteractionType.ApplicationCommand) return;
 
 	const command = client.slashCollection.get(interaction.commandName);
 	if (!command) return; // Not meant for us
