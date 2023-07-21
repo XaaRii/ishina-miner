@@ -24,17 +24,21 @@ module.exports = {
 
 			function runListBuild(victlist, n, d) {
 				if (n < d.length) {
-					if (d[n].tmcomment !== "") victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
+					if (d[n].tmcomment !== undefined) victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
 					else victlist.push(`- ${d[n].tmvictim}`);
 					return runListBuild(victlist, (n + 1), d);
 				}
-				const vlready = victlist.join("\n");
+				const vlready = victlist.join("\n").match(/.{1,1000}/g) ?? [];
 				embed.setTitle(docs[0].tmusername + "'s miner")
-					.addFields([{
-						name: `The list of usernames your miner mines on:`, value: "```\n" + vlready + "\n```", inline: false,
-					}])
+					.setDescription("The list of usernames your miner mines on:")
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+
+				for (let i = 0; i < vlready.length; i++) {
+					embed.addFields([{
+						name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: true,
+					}]);
+				}
 				interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 			}
 		});

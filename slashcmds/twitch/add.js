@@ -8,7 +8,7 @@ module.exports = {
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		tmmachines.find({ tmowner: interaction.user.id }, function (err, docs) {
 			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
-			const streamers = interaction.options.getString('streamers'), comment = interaction.options.getString('comment') ?? 'No reason provided';
+			const streamers = interaction.options.getString('streamers'), comment = interaction.options.getString('comment') ?? undefined;
 			if (!streamers) return interaction.reply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], description = [];
 			const al = streamers.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
@@ -41,7 +41,7 @@ module.exports = {
 
 				if (newlyJoined.length) {
 					description.push("Successfully added `" + newlyJoined.join("`, `") + "`");
-					if (comment !== "") description.push(" with comment: " + comment);
+					if (comment !== undefined) description.push(" with comment: " + comment);
 				} else description.push("No valid changes, the list stays the same.");
 
 				const withRestart = interaction.options.getBoolean('restart') ?? false;
