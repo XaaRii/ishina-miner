@@ -8,7 +8,7 @@ module.exports = {
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		const authorid = interaction.user.id;
 
-		tmmachines.find({ tmowner: authorid }, function (err, doc) {
+		tmmachines.findOne({ tmowner: authorid }, function (err, doc) {
 			if (!doc) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			var victlist = [];
 			tmvictimlist.find({ tmusername: doc.tmusername }, function (err, d) {
