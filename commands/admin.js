@@ -1,5 +1,5 @@
 const { tmmachines, tmvictimlist, misc, client, splitLines } = require('../exports.js');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 const fs = require('fs');
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
 		if (!args[0]) return message.reply("1: userid? (or block/unblock)");
 		if (args[0] === "block") {
 			if (fs.existsSync("../passblocked")) return message.reply("already blocked");
-			fs.writeFile('../passblocked', "blocked", function() {
+			fs.writeFile('../passblocked', "blocked", function () {
 				console.info("Block enabled");
 				return message.reply("Block enabled");
 			});
@@ -82,7 +82,30 @@ module.exports = {
 									.setTimestamp();
 								return message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 							}
-							return runListBuild(victlist, 0, d, embed, docs[0].tmusername);
+
+							const groups = {};
+							for (let i = 0; i < d.length; i++) {
+								const streamer = d[i].tmvictim, comment = d[i].tmcomment === "" ? "none" : d[i].tmcomment;
+								if (groups[comment]) groups[comment] += ', ' + streamer;
+								else groups[comment] = streamer;
+							}
+
+							for (const group in groups) {
+								if (group !== 'none') victlist.push(`${escapeMarkdown(group)}:\n\`\`\`\n${groups[group]}\`\`\``);
+							}
+							if (groups['none']) victlist.push(`No comment:\n\`\`\`\n${groups['none']}\`\`\``);
+
+							const vlready = splitLines(victlist, 1020) ?? [];
+							embed.setTitle(docs[0].tmusername + "'s miner")
+								.setDescription("The list of streamers this miner mines on:")
+								.setTimestamp();
+
+							for (let i = 0; i < vlready.length; i++) {
+								embed.addFields([{
+									name: "⠀", value: vlready[i], inline: false,
+								}]);
+							}
+							message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 						});
 					} else return message.reply("Wrong 3rd arg. reset/view?");
 					if (err) return message.channel.send("error:\n" + err);
@@ -93,25 +116,6 @@ module.exports = {
 					if (docs.length < 1) return message.reply("No such user found. Check syntax?\n  usage: 'block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...'");
 					return message.reply(`**Owner:** ${docs[0].tmowner}\n**Username:** ${docs[0].tmusername}\n**Passworded?** ${docs[0].tmpassworded}\n**Running?** ${docs[0].tmrunning}\nCheck 'list view' for streamer list`);
 				});
-		}
-		function runListBuild(victlist, n, d, embed, tmusername) {
-			if (n < d.length) {
-				if (d[n].tmcomment !== "") victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
-				else victlist.push(`- ${d[n].tmvictim}`);
-				return runListBuild(victlist, (n + 1), d, embed, tmusername);
-			}
-
-			const vlready = splitLines(victlist, 1010) ?? [];
-			embed.setTitle(tmusername + "'s miner")
-				.setDescription("The list of usernames this miner mines on:")
-				.setTimestamp();
-
-			for (let i = 0; i < vlready.length; i++) {
-				embed.addFields([{
-					name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: false,
-				}]);
-			}
-			message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 		}
 	},
 };
