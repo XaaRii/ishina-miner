@@ -39,7 +39,7 @@ module.exports = {
 
 				for (let i = 0; i < vlready.length; i++) {
 					embed.addFields([{
-						name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: true,
+						name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: false,
 					}]);
 				}
 				message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });

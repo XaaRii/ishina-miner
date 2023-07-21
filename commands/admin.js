@@ -96,7 +96,7 @@ module.exports = {
 		}
 		function runListBuild(victlist, n, d, embed, tmusername) {
 			if (n < d.length) {
-				if (d[n].tmcomment !== undefined) victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
+				if (d[n].tmcomment !== "") victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
 				else victlist.push(`- ${d[n].tmvictim}`);
 				return runListBuild(victlist, (n + 1), d, embed, tmusername);
 			}
@@ -108,7 +108,7 @@ module.exports = {
 
 			for (let i = 0; i < vlready.length; i++) {
 				embed.addFields([{
-					name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: true,
+					name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: false,
 				}]);
 			}
 			message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
