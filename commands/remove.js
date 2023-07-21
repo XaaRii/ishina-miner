@@ -15,7 +15,7 @@ module.exports = {
 			if (!args[0]) return message.reply("Who you wanna remove? (check out " + prefix + "list)");
 			var newlyDeleted = [], currlist = [], argslist = args, description = [];
 			const al = argslist.join(" ");
-			argslist = al.replace(/\r?\n|\r/g, " ").replace(",", "").trim().split(" ").filter(e => e);
+			argslist = al.replace(/\r?\n|\r/g, " ").replace(/,/g, "").trim().split(" ").filter(e => e);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) {

@@ -11,7 +11,7 @@ module.exports = {
 			const streamers = interaction.options.getString('streamers'), comment = interaction.options.getString('comment') ?? "";
 			if (!streamers) return interaction.reply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], description = [];
-			const al = streamers.replace(/\r?\n|\r/g, " ").replace(",", "").trim().split(" ").filter(e => e);
+			const al = streamers.replace(/\r?\n|\r/g, " ").replace(/,/g, "").trim().split(" ").filter(e => e);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) return runAddNames(0);

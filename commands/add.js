@@ -16,7 +16,7 @@ module.exports = {
 			if (!args[0]) return message.reply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], comment = "", argslist = args, description = [];
 			const al = argslist.join(" ");
-			argslist = al.replace(/\r?\n|\r/g, " ").replace(",", "").trim().split(" ").filter(e => e);
+			argslist = al.replace(/\r?\n|\r/g, " ").replace(/,/g, "").trim().split(" ").filter(e => e);
 			if (argslist[0].startsWith("#")) {
 				if (!argslist[1]) return message.reply("What streamers you wanna add under this comment?");
 				comment = argslist[0].substring(1);

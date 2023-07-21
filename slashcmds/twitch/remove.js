@@ -11,7 +11,7 @@ module.exports = {
 			const streamers = interaction.options.getString('streamers');
 			if (!streamers) return interaction.reply("Who you wanna remove? (check out /twitch list)");
 			var newlyDeleted = [], currlist = [], description = [];
-			const al = streamers.replace(/\r?\n|\r/g, " ").replace(",", "").trim().split(" ").filter(e => e);
+			const al = streamers.replace(/\r?\n|\r/g, " ").replace(/,/g, "").trim().split(" ").filter(e => e);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) {
