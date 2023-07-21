@@ -1,6 +1,6 @@
 const config = require("../.cfg.json");
 var prefix = config.prefix;
-var { tmmachines, tmvictimlist } = require('../exports.js');
+var { tmmachines, tmvictimlist, splitLines } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
@@ -31,13 +31,17 @@ module.exports = {
 					else victlist.push(`- ${d[n].tmvictim}`);
 					return runListBuild(victlist, (n + 1), d);
 				}
-				const vlready = victlist.join("\n");
+				const vlready = splitLines(victlist, 1010) ?? [];
 				embed.setTitle(docs[0].tmusername + "'s miner")
-					.addFields([{
-						name: `The list of usernames your miner mines on:`, value: "```\n" + vlready + "\n```", inline: false,
-					}])
+					.setDescription("The list of usernames your miner mines on:")
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+
+				for (let i = 0; i < vlready.length; i++) {
+					embed.addFields([{
+						name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: true,
+					}]);
+				}
 				message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 			}
 		});

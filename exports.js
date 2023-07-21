@@ -39,3 +39,30 @@ exports.tmmachines = db1;
 exports.tmvictimlist = db2;
 exports.misc = db3;
 exports.recentBlock = recentBlock;
+
+// Function blocks //
+
+function splitLines(input, limit) {
+	const lines = (typeof input === 'string' || input instanceof String) ? input.split('\n') : input instanceof Array ? input : undefined;
+	if (!lines) return;
+	const arr = []; let part = '';
+
+	lines.forEach(line => {
+		const tmpPart = (part + '\n' + line).trim();
+		if (tmpPart.length > limit) {
+			if (part.length > 0) {
+				arr.push(part);
+				part = line;
+			} else {
+				part.substring(0, limit - 3) + "...";
+				part = part.substring(limit - 2);
+			}
+		} else {
+			part = tmpPart;
+		}
+	});
+	if (part !== '') arr.push(part);
+
+	return arr;
+}
+exports.splitLines = splitLines;

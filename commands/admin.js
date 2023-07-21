@@ -1,4 +1,4 @@
-const { tmmachines, tmvictimlist, misc, client } = require('../exports.js');
+const { tmmachines, tmvictimlist, misc, client, splitLines } = require('../exports.js');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
@@ -100,7 +100,8 @@ module.exports = {
 				else victlist.push(`- ${d[n].tmvictim}`);
 				return runListBuild(victlist, (n + 1), d, embed, tmusername);
 			}
-			const vlready = victlist.join("\n").match(/.{1,1000}/g) ?? [];
+
+			const vlready = splitLines(victlist, 1010) ?? [];
 			embed.setTitle(tmusername + "'s miner")
 				.setDescription("The list of usernames this miner mines on:")
 				.setTimestamp();

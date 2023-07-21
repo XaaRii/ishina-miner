@@ -1,5 +1,5 @@
 const prefix = require("../../.cfg.json").prefix;
-const { tmmachines, tmvictimlist } = require('../../exports.js');
+const { tmmachines, tmvictimlist, splitLines } = require('../../exports.js');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
@@ -28,7 +28,7 @@ module.exports = {
 					else victlist.push(`- ${d[n].tmvictim}`);
 					return runListBuild(victlist, (n + 1), d);
 				}
-				const vlready = victlist.join("\n").match(/.{1,1000}/g) ?? [];
+				const vlready = splitLines(victlist, 1010) ?? [];
 				embed.setTitle(docs[0].tmusername + "'s miner")
 					.setDescription("The list of usernames your miner mines on:")
 					.setTimestamp()
