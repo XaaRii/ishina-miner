@@ -1,6 +1,6 @@
 const prefix = require("../../.cfg.json").prefix;
 const { tmmachines, tmvictimlist, splitLines } = require('../../exports.js');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 
 module.exports = {
 	name: "list",
@@ -8,39 +8,43 @@ module.exports = {
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		const authorid = interaction.user.id;
 
-		tmmachines.find({ tmowner: authorid }, function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
+		tmmachines.find({ tmowner: authorid }, function (err, doc) {
+			if (!doc) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
 			var victlist = [];
-			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
+			tmvictimlist.find({ tmusername: doc.tmusername }, function (err, d) {
 				if (d.length < 1) {
-					embed.setTitle(docs[0].tmusername + "'s miner")
+					embed.setTitle(doc.tmusername + "'s miner")
 						.setDescription("You didn't set any streamers to mine on yet!")
 						.setTimestamp()
 						.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 					return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 				}
-				return runListBuild(victlist, 0, d);
-			});
 
-			function runListBuild(victlist, n, d) {
-				if (n < d.length) {
-					if (d[n].tmcomment !== "") victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
-					else victlist.push(`- ${d[n].tmvictim}`);
-					return runListBuild(victlist, (n + 1), d);
+				const groups = {};
+				for (let i = 0; i < d.length; i++) {
+					const streamer = d[i].tmvictim, comment = d[i].tmcomment === "" ? "none" : d[i].tmcomment;
+					if (groups[comment]) groups[comment] += ', ' + streamer;
+					else groups[comment] = streamer;
 				}
-				const vlready = splitLines(victlist, 1010) ?? [];
-				embed.setTitle(docs[0].tmusername + "'s miner")
-					.setDescription("The list of usernames your miner mines on:")
+
+				for (const group in groups) {
+					if (group !== 'none') victlist.push(`${escapeMarkdown(group)}:\n\`\`\`\n${groups[group]}\`\`\``);
+				}
+				if (groups['none']) victlist.push(`No comment:\n\`\`\`\n${groups['none']}\`\`\``);
+
+				const vlready = splitLines(victlist, 1020) ?? [];
+				embed.setTitle(doc.tmusername + "'s miner")
+					.setDescription("The list of streamers your miner mines on:")
 					.setTimestamp()
 					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
 
 				for (let i = 0; i < vlready.length; i++) {
 					embed.addFields([{
-						name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: false,
+						name: "⠀", value: vlready[i], inline: false,
 					}]);
 				}
 				interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
-			}
+			});
 		});
 	},
 };

@@ -11,7 +11,7 @@ module.exports = {
 			const streamers = interaction.options.getString('streamers'), comment = interaction.options.getString('comment') ?? "";
 			if (!streamers) return interaction.reply("What streamers you wanna add?");
 			var newlyJoined = [], currlist = [], description = [];
-			const al = streamers.replace(/\r?\n|\r/g, " ").trim().split(" ").filter(e => e);
+			const al = streamers.replace(/\r?\n|\r/g, " ").replace(",", "").trim().split(" ").filter(e => e);
 
 			tmvictimlist.find({ tmusername: docs[0].tmusername }, function (err, d) {
 				if (d.length < 1) return runAddNames(0);
@@ -41,7 +41,7 @@ module.exports = {
 
 				if (newlyJoined.length) {
 					description.push("Successfully added `" + newlyJoined.join("`, `") + "`");
-					if (comment !== undefined) description.push(" with comment: " + comment);
+					if (comment !== "") description.push(" with comment: " + comment);
 				} else description.push("No valid changes, the list stays the same.");
 
 				const withRestart = interaction.options.getBoolean('restart') ?? false;
