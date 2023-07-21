@@ -96,16 +96,20 @@ module.exports = {
 		}
 		function runListBuild(victlist, n, d, embed, tmusername) {
 			if (n < d.length) {
-				if (d[n].tmcomment !== "") victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
+				if (d[n].tmcomment !== undefined) victlist.push(`- ${d[n].tmvictim}    (${d[n].tmcomment})`);
 				else victlist.push(`- ${d[n].tmvictim}`);
 				return runListBuild(victlist, (n + 1), d, embed, tmusername);
 			}
-			const vlready = victlist.join("\n");
+			const vlready = victlist.join("\n").match(/.{1,1000}/g) ?? [];
 			embed.setTitle(tmusername + "'s miner")
-				.addFields([{
-					name: `The list of usernames your miner mines on:`, value: "```\n" + vlready + "\n```", inline: false,
-				}])
+				.setDescription("The list of usernames this miner mines on:")
 				.setTimestamp();
+
+			for (let i = 0; i < vlready.length; i++) {
+				embed.addFields([{
+					name: "⠀", value: "```\n" + vlready[i] + "\n```".slice(), inline: true,
+				}]);
+			}
 			message.reply({ embeds: [embed] }).catch(e => { message.reply({ content: "something fucked up, " + e }); });
 		}
 	},
