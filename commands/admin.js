@@ -34,9 +34,8 @@ module.exports = {
 			exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
 				const runningTM = stdout.split("\n");
 				console.log("suspending running processes:", runningTM);
+				recentBlock = "upgrade_pending";
 				for (let i = 0; i < runningTM.length; i++) {
-					// prevent accidental restart
-					if (!recentBlock.includes(runningTM[i])) recentBlock.push(runningTM[i]);
 					exec("screen -S tm-" + runningTM[i] + " -X stuff $'\003'", (err, sout, serr) => { if (err) console.log(err); });
 				}
 

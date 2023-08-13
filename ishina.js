@@ -64,6 +64,7 @@ client.on(Events.ClientReady, () => {
 client.on(Events.MessageCreate, async message => {
 	if (message.channel.id === "894204559306674177" && message.content === "Module check!") return message.channel.send({ content: config.moduleName });
 	if (message.channel.id === "1028704236738981968" && message.content.startsWith("TMERR")) {
+		if (recentBlock === "upgrade_pending") return;
 		const TMid = message.content.slice(5);
 		return exec(`cat ./twitchminers/templogs/tm-${TMid}.err`, (err, stdout) => {
 			if (err) console.log(err);
