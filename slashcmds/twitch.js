@@ -11,10 +11,10 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('twitch')
 		.setDescription('Twitch miner module!')
-		.addSubcommand(subcommand => subcommand
-			.setName('prime')
-			.setDescription('Check out current offers on Twitch Prime.'),
-		)
+		// .addSubcommand(subcommand => subcommand
+		// 	.setName('prime')
+		// 	.setDescription('Check out current offers on Twitch Prime.'),
+		// )
 		.addSubcommand(subcommand => subcommand
 			.setName('create')
 			.setDescription('Register your own twitch miner!')
