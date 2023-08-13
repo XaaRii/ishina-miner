@@ -2,6 +2,7 @@ const config = require("../.cfg.json");
 const { tmmachines, tmvictimlist, misc, client, splitLines, recentBlock } = require('../exports.js');
 const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 module.exports = {
 	name: 'admin',
