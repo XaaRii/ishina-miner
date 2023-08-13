@@ -9,7 +9,7 @@ module.exports = {
 	usage: 'block/unblock/suspend/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...',
 	showHelp: false,
 	execute(message, args) {
-		if (message.author !== config.xaari) return message.reply("No.");
+		if (message.author.id !== config.xaari) return message.reply("No.");
 		if (!args[0]) return message.reply("1: userid? (or block/unblock)");
 		if (args[0] === "block") {
 			if (fs.existsSync("../passblocked")) return message.reply("already blocked");
