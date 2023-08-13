@@ -45,11 +45,11 @@ module.exports = {
 				}
 			}); 
 			message.reply("Running TM's are being shut down. Bot will now find nearest tower to crash into, restart when you are done.");
-			setTimeout(() => {
+			return setTimeout(() => {
 				message.channel.send('Oh shit twins- <a:911:797117151021367327>')
 					.then(msg => {
 						console.log(`Concrete wall built on 'system suspend'.`);
-						const x = require("./keepAlive.js");
+						const x = require("../keepAlive.js");
 						client.destroy();
 					});
 			}, 5000);
