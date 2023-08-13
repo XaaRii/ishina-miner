@@ -1,4 +1,5 @@
-const { tmmachines, tmvictimlist, misc, client, splitLines } = require('../exports.js');
+const config = require("../.cfg.json");
+const { tmmachines, tmvictimlist, misc, client, splitLines, recentBlock } = require('../exports.js');
 const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 const fs = require('fs');
 
@@ -8,6 +9,7 @@ module.exports = {
 	usage: 'block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...',
 	showHelp: false,
 	execute(message, args) {
+		if (message.author !== config.xaari) return message.reply("No.");
 		if (!args[0]) return message.reply("1: userid? (or block/unblock)");
 		if (args[0] === "block") {
 			if (fs.existsSync("../passblocked")) return message.reply("already blocked");
@@ -63,6 +65,30 @@ module.exports = {
 					if (err) return message.channel.send("error:\n" + err);
 					return message.channel.send("Done.");
 				});
+				break;
+			case "suspend":
+				exec(`screen -ls | grep "tm-"| awk '{print $1}' | cut -d. -f 2 | cut -c 4-`, function (error, stdout, stderr) {
+					const runningTM = stdout.split("\n");
+					console.log("suspending running processes:", runningTM);
+					for (let i = 0; i < runningTM.length; i++) {
+						// prevent accidental restart
+						if (!recentBlock.includes(runningTM[i])) recentBlock.push(runningTM[i]);
+						exec("screen -S tm-" + runningTM[i] + " -X stuff $'\003'", (err, sout, serr) => { if (err) console.log(err); });
+					}
+
+					if (error !== null) {
+						if (client.channels.cache.get('735207428299161602') !== undefined) client.channels.cache.get('735207428299161602').send(config.moduleName + " ᴇʀʀᴏʀ: `" + error + "`");
+					}
+				}); 
+				message.reply("Running TM's are being shut down. Bot will now find nearest tower to crash into, restart when you are done.");
+				setTimeout(() => {
+					message.channel.send('Oh shit twins- <a:911:797117151021367327>')
+						.then(msg => {
+							console.log(`Concrete wall built on 'system suspend'.`);
+							const x = require("./keepAlive.js");
+							client.destroy();
+						});
+				}, 5000);
 				break;
 			case "list":
 				tmmachines.find({ tmowner: args[0] }, function (err, docs) {
