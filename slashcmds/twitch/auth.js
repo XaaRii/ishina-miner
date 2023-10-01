@@ -57,7 +57,7 @@ module.exports = {
 				const vlready = victlist.join("\n");
 
 				let oldFile = fs.readFileSync('./twitchminers/run' + authorid + '.py', 'utf8');
-				if (!oldFile) return interaction.reply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
+				if (!oldFile) return interaction.editReply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
 				oldFile = oldFile.split("miner.mine");
 
 				fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
@@ -82,20 +82,20 @@ module.exports = {
 								docsUpdate(true, false);
 								let authCode = stdout.split("enter this code: ");
 								authCode = authCode[1].split(/\r?\n|\r/g);
-								interaction.editReply(`You want to authorize your twitch miner called \`${docs[0].tmusername}\` right?\nFor that, you have to go to a website __<https://www.twitch.tv/activate>__, fill in the following code: \`${authCode[0]}\` and grant the access to your account.\n**__Make sure you are logged into the correct account before progressing!__** If the name isn't the same as the one you put into twitch miner, bad things will happen.\nAfter that, the miner will be ready to go. But be quick, you only have 30 minutes before the code expires!`);
+								interaction.followUp(`You want to authorize your twitch miner called \`${docs[0].tmusername}\` right?\nFor that, you have to go to a website __<https://www.twitch.tv/activate>__, fill in the following code: \`${authCode[0]}\` and grant the access to your account.\n**__Make sure you are logged into the correct account before progressing!__** If the name isn't the same as the one you put into twitch miner, bad things will happen.\nAfter that, the miner will be ready to go. But be quick, you only have 30 minutes before the code expires!`);
 								timeIssued = Date.now();
 								return waitcheck();
 							} else if (stdout.includes("Loading data for")) {
 								console.info("stdout.includes Loading data for");
 								// prefilled pw / cookies
 								docsUpdate(true, true);
-								return interaction.reply("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
+								return interaction.followUp("Found a matching password or cookies file in my storage...\nAuthorization complete, it is running now.");
 							} else {
 								console.log("How did we get here? -\n" + stdout);
-								return interaction.reply("How did we get here? Something must be broken, report this to Pawele. *(Although I'm not entirely sure if he'll be able to help)*");
+								return interaction.followUp("How did we get here? Something must be broken, report this to Pawele. *(Although I'm not entirely sure if he'll be able to help)*");
 							}
 						});
-					}, 1500);
+					}, 6000);
 				});
 			}
 
@@ -133,7 +133,7 @@ module.exports = {
 								}])
 								.setTimestamp()
 								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
-							return interaction.editReply({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
+							return interaction.followUp({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
 						}
 					//	if (stdout.includes("Invalid Login") || stdout.includes("Invalid two factor")) {
 					//		message.channel.send("Invalid 2FA verification code, please try again.");
