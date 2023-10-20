@@ -1,5 +1,6 @@
 const config = require("../.cfg.json");
-const { tmmachines, tmvictimlist, misc, client, splitLines, recentBlock } = require('../exports.js');
+const { tmmachines, tmvictimlist, misc, client, splitLines } = require('../exports.js');
+var { recentBlock }	= require('../exports.js');
 const { EmbedBuilder, escapeMarkdown } = require('discord.js');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -140,7 +141,7 @@ module.exports = {
 				break;
 			default:
 				tmmachines.find({ tmowner: args[0] }, function (err, docs) {
-					if (docs.length < 1) return message.reply("No such user found. Check syntax?\n  usage: 'block/unblock/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...'");
+					if (docs.length < 1) return message.reply("No such user found. Check syntax?\n  usage: 'block/unblock/suspend/ <userid> <owner/username/passworded/running/list> (value)/(reset/view) ...'");
 					return message.reply(`**Owner:** ${docs[0].tmowner}\n**Username:** ${docs[0].tmusername}\n**Passworded?** ${docs[0].tmpassworded}\n**Running?** ${docs[0].tmrunning}\nCheck 'list view' for streamer list`);
 				});
 		}
