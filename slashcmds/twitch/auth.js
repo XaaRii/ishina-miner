@@ -22,14 +22,13 @@ module.exports = {
 
 		const embed = new EmbedBuilder().setColor('ffbf00');
 		var timeIssued;
-
+		await interaction.deferReply();
 		tmmachines.find({ tmowner: interaction.user.id }, function (err, docs) {
-			if (docs.length < 1) return interaction.reply("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
-			if (docs[0].tmpassworded) return interaction.reply("You don't have to authorize again. It was already accepted.\nIf there are any problems (fe. you changed twitch username) contact Pawele, he will help you.");
+			if (docs.length < 1) return interaction.followUp("Sorry, but you don't own any miner. Though, you can register one using `/twitch create <username>`");
+			if (docs[0].tmpassworded) return interaction.followUp("You don't have to authorize again. It was already accepted.\nIf there are any problems (fe. you changed twitch username) contact Pawele, he will help you.");
 			// if (!args[0]) return message.reply("If you won't pass me any password, i can't log in!");
-			if (docs[0].tmrunning) return interaction.reply("There is already an authorization process ongoing.");
+			if (docs[0].tmrunning) return interaction.followUp("There is already an authorization process ongoing.");
 
-			interaction.deferReply();
 			const authorid = docs[0].tmowner;
 
 			console.info(`Auth request from ${interaction.user.username} is occurring:`);
@@ -57,7 +56,7 @@ module.exports = {
 				const vlready = victlist.join("\n");
 
 				let oldFile = fs.readFileSync('./twitchminers/run' + authorid + '.py', 'utf8');
-				if (!oldFile) return interaction.editReply("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
+				if (!oldFile) return interaction.followUp("error: Your file seems to be missing *somehow*. Contact Pawele, he will help ya.");
 				oldFile = oldFile.split("miner.mine");
 
 				fs.writeFileSync('./twitchminers/run' + authorid + '.py', oldFile[0] + vlready, 'utf8');
@@ -72,10 +71,10 @@ module.exports = {
 							console.info("prompted a hardcopy:");
 							if (err) {
 								if (stdout.includes("There are several suitable screens on")) {
-									return interaction.editReply("This should not be happening! There are multiple sessions opened, contact Pawele and he will manually fix it.");
+									return interaction.followUp("This should not be happening! There are multiple sessions opened, contact Pawele and he will manually fix it.");
 								}
 								console.log("finalizing1 hardcopy -\n" + err);
-								return interaction.editReply("Something fucked up, contact Pawele, he will look into it.");
+								return interaction.followUp("Something fucked up, contact Pawele, he will look into it.");
 							}
 							if (stdout.includes("It will expire in")) {
 								console.info("stdout.includes It will expire in");
