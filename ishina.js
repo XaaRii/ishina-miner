@@ -266,7 +266,9 @@ async function prepareScraperData(attachments) {
 	const https = require('https')
 	try {
 		attachments.forEach(a => {
-			if (!a.contentType.startsWith("text/csv")) return console.log("Invalid content type: " + a.contentType);
+			conType = a.contentType.split(';').trim();
+			// text/csv; charset=ISO-8859-1
+			if (conType !== "text/csv") return console.log("Invalid content type: " + a.contentType);
 			if (fs.existsSync(`./checkers/${a.name}`)) {
 				fs.writeFileSync(`./checkers/${a.name}.old`, fs.readFileSync(`./checkers/${a.name}`) );
 				fs.unlinkSync(`./checkers/${a.name}`);
@@ -280,18 +282,12 @@ async function prepareScraperData(attachments) {
 			file.on('finish', async () => {
 				file.close();
 
-				const buffer = fs.readFileSync("./checkers/" + a.name);
-				let utf8content;
 				try {
-					utf8content = buffer.toString('utf8');
+					const utf8content = fs.readFileSync(`./checkers/${a.name}`).toString('utf8');
+					fs.writeFileSync(`./checkers/${a.name}`, utf8content);
+		
 				} catch (error) {
-					try {
-						utf8content = buffer.toString('iso-8859-1');
-						fs.writeFileSync(`./checkers/${a.name}`, utf8content);
-					} catch (error) {
-						if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "unexpected encoding error: " + error });
-						return;
-					}
+					if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "unexpected encoding error: " + error });
 				}
 
 				manageScrapeData(a.name);
@@ -309,31 +305,46 @@ async function prepareScraperData(attachments) {
 
 const { EmbedBuilder } = require('discord.js');
 async function manageScrapeData(filename) {
-	let diff = [], destination = "", embed = await new EmbedBuilder().setTimestamp(), msg = {};
+	let diff = [], destination = "", embedList = [new EmbedBuilder()], msg = [];
 	try {
 		switch (filename) {
 			case "PA_PRIME.csv":
 				headers = ["name", "game", "link", "image"];
 				destination = "1161948675006812211";
 				diff = await processCSV(filename, headers, "link");
-				await embed.setTitle("New Twitch Prime offers!")
+				embedList[0].setTitle("New Twitch Prime offers!")
 						.setColor("9146ff")
+				i = 0, e = 0;
 				for (const item of diff) {
-					await embed.addFields({ name: item.name, value: `${item.game}\n[Claim now!](${item.link})`, inline: true });
+					if (i > 24) {
+						i = 0;
+						embedList.push(new EmbedBuilder().setColor("9146ff"));
+						e++;
+					}
+					embedList[e].addFields({ name: item.name, value: `${item.game}\n[Claim now!](${item.link})`, inline: true });
 				}
-				msg = { embeds: [embed] }
+				// edit last embed in embedList to add timestamp
+				embedList[e].setTimestamp();
+				msg.push({ embeds: embedList })
 				break;
 
 			case "PA_TDROPS.csv":
 				headers = ["game", "studio", "datetime"];
 				destination = "1161948782326456340";
 				diff = await processCSV(filename, headers, "game", "datetime");
-				await embed.setTitle("New Twitch Drops available!")
+				embedList[0].setTitle("New Twitch Drops available!")
 						.setColor("7213ff")
+				i = 0, e = 0;
 				for (const item of diff) {
-					await embed.addFields({ name: item.game, value: `${item.studio}\n${item.datetime}`, inline: false });
+					if (i > 24) {
+						i = 0;
+						embedList.push(new EmbedBuilder().setColor("7213ff"));
+						e++;
+					}
+					embedList[e].addFields({ name: item.game, value: `${item.studio}\n${item.datetime}`, inline: false });
+					i++;
 				}
-				msg = { embeds: [embed] } 
+				msg.push({ embeds: embedList })
 				break;
 
 			case "PA_HS.csv":
@@ -344,7 +355,11 @@ async function manageScrapeData(filename) {
 				for (const item of diff) {
 					attas.push(new AttachmentBuilder(item.image));
 				}
-				msg = { content: "New Hearthstone shop rotation!", files: attas } 
+				// Discord's API limit is 10 files per message
+				while (attas.length > 0) {
+					msg.push({ content: "", files: attas.splice(0, 10) });
+				}
+				msg[0].content = "New Hearthstone shop rotation!";
 				break;
 
 			default:
@@ -354,11 +369,16 @@ async function manageScrapeData(filename) {
 		if (diff.length < 1) return;
 
 		let where = client.channels.cache.get(destination);
-		if (!where) await client.channels.fetch(destination);
+		if (!where) where = await client.channels.fetch(destination);
 
-		return client.channels.cache.get(destination).send(msg);
+		for (const i of msg) {
+			const x = where.send(i);
+			if (x.type === 'GUILD_NEWS') x.crosspost();
+		}
+		return;
 
 	} catch (error) {
+		if (fs.existsSync(`./checkers/${filename}`)) fs.unlinkSync(`./checkers/${filename}`);
 		if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "error: " + error });
 		return;
 	}
@@ -369,7 +389,7 @@ async function processCSV(filename, headers, compareBy, compareSecondary = null)
 	let n = [], o = [];
 
 	const readNewFile = new Promise((resolve, reject) => {
-		fs.createReadStream(`./checkers/${filename}`)
+		fs.createReadStream(`./checkers/${filename}`, { encoding: 'utf8' })
 			.pipe(csv({ headers: headers, separator: ';' }))
 			.on('data', (data) => n.push(data))
 			.on('end', resolve)
@@ -377,8 +397,8 @@ async function processCSV(filename, headers, compareBy, compareSecondary = null)
 	});
 
 	const readOldFile = new Promise((resolve, reject) => {
-		if (!fs.existsSync(`./checkers/${filename}.old`)) resolve();
-		fs.createReadStream(`./checkers/${filename}.old`)
+		if (!fs.existsSync(`./checkers/${filename}.old`)) return resolve();
+		fs.createReadStream(`./checkers/${filename}.old`, { encoding: 'utf8' })
 			.pipe(csv({ headers: headers, separator: ';' }))
 			.on('data', (data) => o.push(data))
 			.on('end', resolve)
