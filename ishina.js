@@ -266,11 +266,9 @@ async function prepareScraperData(attachments) {
 	const https = require('https')
 	try {
 		attachments.forEach(a => {
-			conType = a.contentType.split(';').trim();
-			// text/csv; charset=ISO-8859-1
-			if (conType !== "text/csv") return console.log("Invalid content type: " + a.contentType);
+			if (!a.contentType.startsWith("text/plain")) return console.log("Invalid content type: " + a.contentType);
 			if (fs.existsSync(`./checkers/${a.name}`)) {
-				fs.writeFileSync(`./checkers/${a.name}.old`, fs.readFileSync(`./checkers/${a.name}`) );
+				fs.writeFileSync(`./checkers/${a.name}.old`, fs.readFileSync(`./checkers/${a.name}`));
 				fs.unlinkSync(`./checkers/${a.name}`);
 			}
 
@@ -283,9 +281,10 @@ async function prepareScraperData(attachments) {
 				file.close();
 
 				try {
-					const utf8content = fs.readFileSync(`./checkers/${a.name}`).toString('utf8');
-					fs.writeFileSync(`./checkers/${a.name}`, utf8content);
-		
+					const encoded = fs.readFileSync(`./checkers/${a.name}`, 'utf8');
+        			const decoded = Buffer.from(encoded, 'base64').toString('utf8');
+					fs.writeFileSync(`./checkers/${a.name}`, decoded, 'utf8');
+
 				} catch (error) {
 					if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "unexpected encoding error: " + error });
 				}
@@ -299,7 +298,9 @@ async function prepareScraperData(attachments) {
 			});
 		});
 	} catch (error) {
-		return message.channel.send({ content: "error: " + error });
+		console.log("Error: ", error);
+		if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "prepareScraperData error: " + error });
+		return;
 	}
 }
 
@@ -313,7 +314,7 @@ async function manageScrapeData(filename) {
 				destination = "1161948675006812211";
 				diff = await processCSV(filename, headers, "link");
 				embedList[0].setTitle("New Twitch Prime offers!")
-						.setColor("9146ff")
+					.setColor("9146ff")
 				i = 0, e = 0;
 				for (const item of diff) {
 					if (i > 24) {
@@ -333,7 +334,7 @@ async function manageScrapeData(filename) {
 				destination = "1161948782326456340";
 				diff = await processCSV(filename, headers, "game", "datetime");
 				embedList[0].setTitle("New Twitch Drops available!")
-						.setColor("7213ff")
+					.setColor("7213ff")
 				i = 0, e = 0;
 				for (const item of diff) {
 					if (i > 24) {
@@ -371,9 +372,9 @@ async function manageScrapeData(filename) {
 		let where = client.channels.cache.get(destination);
 		if (!where) where = await client.channels.fetch(destination);
 
-		for (const i of msg) {
-			const x = where.send(i);
-			if (x.type === 'GUILD_NEWS') x.crosspost();
+		for (const o of msg) {
+			const x = await where.send(o);
+			if (x.channel.type === 5) await x.crosspost();
 		}
 		return;
 
