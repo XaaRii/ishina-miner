@@ -3,6 +3,7 @@ require('console-stamp')(console);
 try {
 	require('./ishina.js');
 } catch (err) {
+	console.log(err);
 	if (err instanceof SyntaxError) {
 		console.log("----------------------------------------\nSyntaxError detected! Booting into ᴇᴍᴇʀɢᴇɴᴄʏ ᴍᴏᴅᴇ...");
 		emergency("SyntaxError");
@@ -16,7 +17,6 @@ try {
 		console.log("----------------------------------------\n'File not found' Error detected! Booting into ᴇᴍᴇʀɢᴇɴᴄʏ ᴍᴏᴅᴇ...");
 		emergency("'File not found' Error");
 	} else {
-		console.log(err);
 		emergency("unknownError");
 	}
 }

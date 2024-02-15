@@ -63,6 +63,11 @@ client.on(Events.ClientReady, () => {
 
 client.on(Events.MessageCreate, async message => {
 	if (message.channel.id === "894204559306674177" && message.content === "Module check!") return message.channel.send({ content: config.moduleName });
+	if (message.channel.id === "1028704236738981968") {
+		if (message.author.username !== "DataMiner") return;
+		if (message.attachments.size > 0) prepareScraperData(message.attachments);
+		return;
+	}
 	if (message.channel.id === "1028704236738981968" && message.content.startsWith("TMERR")) {
 		if (recentBlock === "upgrade_pending") return;
 		const TMid = message.content.slice(5);
@@ -256,6 +261,141 @@ process.on('unhandledRejection', (reason) => {
 client.login(config.dcToken);
 
 /* FUNCTIONS */
+
+async function prepareScraperData(attachments) {
+	const https = require('https')
+	try {
+		attachments.forEach(a => {
+			if (!a.contentType.startsWith("text/csv")) return console.log("Invalid content type: " + a.contentType);
+			if (fs.existsSync(`./checkers/${a.name}`)) {
+				fs.writeFileSync(`./checkers/${a.name}.old`, fs.readFileSync(`./checkers/${a.name}`) );
+				fs.unlinkSync(`./checkers/${a.name}`);
+			}
+
+			const file = fs.createWriteStream(`./checkers/${a.name}`);
+			https.get(a.url, function (response) {
+				response.pipe(file);
+			});
+
+			file.on('finish', async () => {
+				file.close();
+
+				const buffer = fs.readFileSync("./checkers/" + a.name);
+				let utf8content;
+				try {
+					utf8content = buffer.toString('utf8');
+				} catch (error) {
+					try {
+						utf8content = buffer.toString('iso-8859-1');
+						fs.writeFileSync(`./checkers/${a.name}`, utf8content);
+					} catch (error) {
+						if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "unexpected encoding error: " + error });
+						return;
+					}
+				}
+
+				manageScrapeData(a.name);
+
+			});
+
+			file.on('error', (error) => {
+				console.error(`Error writing file ${a.name}:`, error);
+			});
+		});
+	} catch (error) {
+		return message.channel.send({ content: "error: " + error });
+	}
+}
+
+const { EmbedBuilder } = require('discord.js');
+async function manageScrapeData(filename) {
+	let diff = [], destination = "", embed = await new EmbedBuilder().setTimestamp(), msg = {};
+	try {
+		switch (filename) {
+			case "PA_PRIME.csv":
+				headers = ["name", "game", "link", "image"];
+				destination = "1161948675006812211";
+				diff = await processCSV(filename, headers, "link");
+				await embed.setTitle("New Twitch Prime offers!")
+						.setColor("9146ff")
+				for (const item of diff) {
+					await embed.addFields({ name: item.name, value: `${item.game}\n[Claim now!](${item.link})`, inline: true });
+				}
+				msg = { embeds: [embed] }
+				break;
+
+			case "PA_TDROPS.csv":
+				headers = ["game", "studio", "datetime"];
+				destination = "1161948782326456340";
+				diff = await processCSV(filename, headers, "game", "datetime");
+				await embed.setTitle("New Twitch Drops available!")
+						.setColor("7213ff")
+				for (const item of diff) {
+					await embed.addFields({ name: item.game, value: `${item.studio}\n${item.datetime}`, inline: false });
+				}
+				msg = { embeds: [embed] } 
+				break;
+
+			case "PA_HS.csv":
+				headers = ["image"];
+				destination = "1161947881062805515";
+				diff = await processCSV(filename, headers, "image");
+				attas = [];
+				for (const item of diff) {
+					attas.push(new AttachmentBuilder(item.image));
+				}
+				msg = { content: "New Hearthstone shop rotation!", files: attas } 
+				break;
+
+			default:
+				console.warn("Couldn't parse, invalid filename " + filename);
+				return;
+		}
+		if (diff.length < 1) return;
+
+		let where = client.channels.cache.get(destination);
+		if (!where) await client.channels.fetch(destination);
+
+		return client.channels.cache.get(destination).send(msg);
+
+	} catch (error) {
+		if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "error: " + error });
+		return;
+	}
+}
+
+const csv = require('csv-parser');
+async function processCSV(filename, headers, compareBy, compareSecondary = null) {
+	let n = [], o = [];
+
+	const readNewFile = new Promise((resolve, reject) => {
+		fs.createReadStream(`./checkers/${filename}`)
+			.pipe(csv({ headers: headers, separator: ';' }))
+			.on('data', (data) => n.push(data))
+			.on('end', resolve)
+			.on('error', reject);
+	});
+
+	const readOldFile = new Promise((resolve, reject) => {
+		if (!fs.existsSync(`./checkers/${filename}.old`)) resolve();
+		fs.createReadStream(`./checkers/${filename}.old`)
+			.pipe(csv({ headers: headers, separator: ';' }))
+			.on('data', (data) => o.push(data))
+			.on('end', resolve)
+			.on('error', reject);
+	});
+
+	await Promise.all([readNewFile, readOldFile]);
+
+	// compare the two JSON arrays
+	let diff = n.filter((el) => {
+		let found = o.find((el2) => el[compareBy] === el2[compareBy] && (compareSecondary === null || el[compareSecondary] === el2[compareSecondary]));
+		return !found;
+	});
+	console.log(n.length, o.length, diff.length);
+	return diff;
+}
+
 
 async function execcall(msgchannel, cmd) {
 	const m = await msgchannel.send("Request sent.");
