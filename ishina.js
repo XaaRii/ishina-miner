@@ -76,7 +76,7 @@ client.on(Events.MessageCreate, async message => {
 			const atc = new AttachmentBuilder(Buffer.from(stdout), { name: TMid + '.txt' });
 			if (recentBlock.includes(TMid)) {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
-				return message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nWithout restart.`, files: [atc] });
+				return message.reply({ content: `<@303108947261259776> ERROR (${TMid})\nNot restarting.`, files: [atc] });
 			}
 			else {
 				tmmachines.update({ tmowner: TMid }, { $set: { tmrunning: false } });
@@ -100,6 +100,7 @@ client.on(Events.MessageCreate, async message => {
 	const args = shorty ? message.content.slice(prefixAlias.length).trim().split(/ +/) : message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
+	console.log(message.author.username, "|", commandName, args);
 	switch (commandName) {
 		case "refresh":
 			message.channel.sendTyping();
@@ -144,11 +145,20 @@ client.on(Events.MessageCreate, async message => {
 				else return evalcall(args, message);
 			} else return message.reply("**ᴀᴄᴄᴇꜱꜱ ᴅᴇɴɪᴇᴅ**, get lost.");
 		case "deploy":
-			if (message.author.id !== config.xaari) return;
-			if (!["global", "local"].includes(args[0])) message.channel.send("Missing argument: local/global (overwrite)");
+			if (message.author.id !== config.xaari) return message.channel.send("How about deploying yourself into a proper employment instead?");
+			if (!["global", "local"].includes(args[0])) return message.channel.send("Missing argument: local/global (overwrite)");
 			message.channel.sendTyping();
 			var resp = ['Registering commands in progress...\n'];
 			var progressbar = args[1] !== "overwrite" ? await message.reply({ content: resp.join("") }) : undefined;
+
+			// json hack because we don't have the luxury of user commands in djs yet
+			let hacked_json
+			function body_hack_usercmds(body) {
+				// if (body.name !== "twitch") return body;
+				body.integration_types = [0, 1];
+				body.contexts = [0, 1, 2];
+				return body;
+			}
 			if (args[0] === "local") {
 				try {
 					const slashCommands = [];
@@ -160,7 +170,8 @@ client.on(Events.MessageCreate, async message => {
 						client.slashCollection.set(command.data.name, command);
 						if (args[1] === "overwrite") slashCommands.push(command.data);
 						else {
-							await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: command.data.toJSON() });
+							hacked_json = await body_hack_usercmds(command.data.toJSON());
+							await rest.post(Routes.applicationCommands(config.dcAppID, message.guildId), { body: hacked_json });
 							resp.push(command.data.name + " ");
 							progressbar.edit(resp.join(""));
 						}
@@ -190,7 +201,8 @@ client.on(Events.MessageCreate, async message => {
 						if (!command.developer) {
 							if (args[1] === "overwrite") slashPubCommands.push(command.data);
 							else {
-								await rest.post(Routes.applicationCommands(config.dcAppID), { body: command.data.toJSON() });
+								hacked_json = await body_hack_usercmds(command.data.toJSON());
+								await rest.post(Routes.applicationCommands(config.dcAppID), { body: hacked_json });
 								resp.push(command.data.name + " ");
 								progressbar.edit(resp.join(""));
 							}
@@ -209,7 +221,7 @@ client.on(Events.MessageCreate, async message => {
 					else progressbar.edit('Could not deploy commands!\n' + error);
 					console.error(error);
 				}
-			} else return message.channel.send("Missing argument: local/global (overwrite)");
+			} else return message.channel.send("Bad format, use these args: local/global (overwrite)");
 			break;
 	}
 	var command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
@@ -282,10 +294,11 @@ async function prepareScraperData(attachments) {
 
 				try {
 					const encoded = fs.readFileSync(`./checkers/${a.name}`, 'utf8');
-        			const decoded = Buffer.from(encoded, 'base64').toString('utf8');
+					const decoded = Buffer.from(encoded, 'base64').toString('utf8');
 					fs.writeFileSync(`./checkers/${a.name}`, decoded, 'utf8');
 
 				} catch (error) {
+					console.error(error);
 					if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "unexpected encoding error: " + error });
 				}
 
@@ -309,7 +322,7 @@ async function manageScrapeData(filename) {
 	let diff = [], destination = "", embedList = [new EmbedBuilder()], msg = [];
 	try {
 		switch (filename) {
-			case "PA_PRIME.csv":
+			case "PA_PRIME.txt":
 				headers = ["name", "game", "link", "image"];
 				destination = "1161948675006812211";
 				diff = await processCSV(filename, headers, "link");
@@ -322,14 +335,18 @@ async function manageScrapeData(filename) {
 						embedList.push(new EmbedBuilder().setColor("9146ff"));
 						e++;
 					}
-					embedList[e].addFields({ name: item.name, value: `${item.game}\n[Claim now!](${item.link})`, inline: true });
+					if (item.name && item.game && item.link) {
+						embedList[e].addFields({ name: item.name, value: `${item.game}\n[Claim now!](${item.link})`, inline: true });
+						i++;
+					}
 				}
+				if (!i && !e) return;
 				// edit last embed in embedList to add timestamp
 				embedList[e].setTimestamp();
 				msg.push({ embeds: embedList })
 				break;
 
-			case "PA_TDROPS.csv":
+			case "PA_TDROPS.txt":
 				headers = ["game", "studio", "datetime"];
 				destination = "1161948782326456340";
 				diff = await processCSV(filename, headers, "game", "datetime");
@@ -348,7 +365,7 @@ async function manageScrapeData(filename) {
 				msg.push({ embeds: embedList })
 				break;
 
-			case "PA_HS.csv":
+			case "PA_HS.txt":
 				headers = ["image"];
 				destination = "1161947881062805515";
 				diff = await processCSV(filename, headers, "image");
@@ -360,7 +377,7 @@ async function manageScrapeData(filename) {
 				while (attas.length > 0) {
 					msg.push({ content: "", files: attas.splice(0, 10) });
 				}
-				msg[0].content = "New Hearthstone shop rotation!";
+				if (msg[0]) msg[0].content = "New Hearthstone shop rotation!";
 				break;
 
 			default:
@@ -379,9 +396,12 @@ async function manageScrapeData(filename) {
 		return;
 
 	} catch (error) {
-		if (fs.existsSync(`./checkers/${filename}`)) fs.unlinkSync(`./checkers/${filename}`);
-		if (client.channels.cache.get('1028704236738981968') !== undefined) client.channels.cache.get('1028704236738981968').send({ content: "error: " + error });
-		return;
+		if (client.channels.cache.get('1028704236738981968') !== undefined) await client.channels.cache.get('1028704236738981968').send({ content: "error: " + error });
+		if (fs.existsSync(`./checkers/${filename}`)) {
+			if (client.channels.cache.get('1028704236738981968') !== undefined) await client.channels.cache.get('1028704236738981968').send({ files: [`./checkers/${filename}`] });
+			fs.unlinkSync(`./checkers/${filename}`);
+		}
+		return console.error(error);
 	}
 }
 
@@ -413,7 +433,7 @@ async function processCSV(filename, headers, compareBy, compareSecondary = null)
 		let found = o.find((el2) => el[compareBy] === el2[compareBy] && (compareSecondary === null || el[compareSecondary] === el2[compareSecondary]));
 		return !found;
 	});
-	console.log(n.length, o.length, diff.length);
+	console.log("new old diff", n.length, o.length, diff.length);
 	return diff;
 }
 
