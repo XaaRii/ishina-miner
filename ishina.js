@@ -41,6 +41,9 @@ client.on(Events.ClientReady, () => {
 						if (err) console.log(err);
 						console.log(`Fixed ${docs[i].tmowner} - run state set to ${docs[i].tmrunning}`);
 					});
+					// wait 10 seconds and wait for it to finish
+					sleep(10000)
+					
 				}
 				if (runningTM.includes(docs[i].tmowner) && !(docs[i].tmrunning && docs[i].tmpassworded)) {
 					// end it lol
@@ -473,4 +476,11 @@ async function evalcall(args, message) {
 		console.error(err);
 		message.reply(`There was an error during evaluation. ᴇʀʀᴏʀ: \`${err}\``);
 	}
+}
+
+function sleep(milliseconds) {
+    const start = Date.now();
+    while (Date.now() - start < milliseconds) {
+        // Block execution
+    }
 }
