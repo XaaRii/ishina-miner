@@ -10,3 +10,5 @@ twitchminers/*
 !twitchminers/starter.sh
 twitchminers/templogs/*
 !twitchminers/templogs/
+
+checkers/*
