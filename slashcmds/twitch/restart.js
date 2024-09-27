@@ -15,7 +15,7 @@ module.exports = {
 		function response(i, msg) {
 			if (isFollowUp) {
 				if (!followUpMessage) followUpMessage = interaction.followUp(msg).then(m => { followUpMessage = m; });
-				else followUpMessage.edit(msg).catch(er => console.log("something fucked up, " + er));
+				else followUpMessage.editReply(msg).catch(er => console.log("something fucked up, " + er));
 			} else if (i) interaction.reply(msg).catch(er => console.log("something fucked up, " + er));
 			else interaction.editReply(msg).catch(er => console.log("something fucked up, " + er));
 		}
