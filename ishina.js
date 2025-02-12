@@ -321,18 +321,20 @@ async function prepareScraperData(attachments) {
 }
 
 const { EmbedBuilder } = require('discord.js');
+const HTMLParser = require('node-html-parser');
+
 async function manageScrapeData(filename) {
 	let diff = [], destination = "", embedList = [new EmbedBuilder()], msg = [];
 	try {
 		switch (filename) {
 			case "PA_PRIME.txt":
-				headers = ["name", "game", "link", "image"];
 				destination = "1161948675006812211";
-				diff = await processCSV(filename, headers, "link");
+				headers = ["name", "game", "link", "image"];
+				images = await processCSV(filename, headers, "link");
 				embedList[0].setTitle("New Twitch Prime offers!")
 					.setColor("9146ff")
 				i = 0, e = 0;
-				for (const item of diff) {
+				for (const item of images) {
 					if (i > 24) {
 						i = 0;
 						embedList.push(new EmbedBuilder().setColor("9146ff"));
@@ -350,13 +352,13 @@ async function manageScrapeData(filename) {
 				break;
 
 			case "PA_TDROPS.txt":
-				headers = ["game", "studio", "datetime"];
 				destination = "1161948782326456340";
-				diff = await processCSV(filename, headers, "game", "datetime");
+				headers = ["game", "studio", "datetime"];
+				images = await processCSV(filename, headers, "game", "datetime");
 				embedList[0].setTitle("New Twitch Drops available!")
 					.setColor("7213ff")
 				i = 0, e = 0;
-				for (const item of diff) {
+				for (const item of images) {
 					if (i > 24) {
 						i = 0;
 						embedList.push(new EmbedBuilder().setColor("7213ff"));
@@ -369,11 +371,26 @@ async function manageScrapeData(filename) {
 				break;
 
 			case "PA_HS.txt":
-				headers = ["image"];
 				destination = "1161947881062805515";
-				diff = await processCSV(filename, headers, "image");
-				attas = [];
-				for (const item of diff) {
+				/// CSV approach not working since 10.2.2025
+				// headers = ["image"];
+				// diff = await processCSV(filename, headers, "image");
+
+				const data = fs.readFileSync(`./checkers/${filename}`, 'utf8');
+				const root = HTMLParser.parse(data);
+				const entryContent = root.querySelector('.entry-content');
+				const images = entryContent.querySelectorAll('img').map(x => x.getAttribute('data-src'));
+
+				// compare with old results
+				const oldData = fs.readFileSync(`./checkers/${filename}.old`, 'utf8');
+				const oldRoot = HTMLParser.parse(oldData);
+				const oldEntryContent = oldRoot.querySelector('.entry-content');
+				const oldimages = oldEntryContent.querySelectorAll('img').map(x => x.getAttribute('data-src'));
+
+				diff = images.filter((el) => !oldimages.includes(el));
+				console.log("hs diff", images.length);
+
+				for (const item of images) {
 					attas.push(new AttachmentBuilder(item.image));
 				}
 				// Discord's API limit is 10 files per message
