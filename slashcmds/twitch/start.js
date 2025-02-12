@@ -64,8 +64,7 @@ module.exports = {
 							mode ? embed.setDescription("Twitch miner is not running. (" + i + "/6)") : embed.setDescription("Twitch miner is not running.");
 							embed.setColor('e82e2e')
 								.setTitle(docs[0].tmusername + "'s miner")
-								.setTimestamp()
-								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+								.setTimestamp();
 						} else {
 							if (mode) {
 								if (i < 6) embed.setDescription("Next refresh in 5 seconds. (" + i + "/6)");
@@ -89,8 +88,7 @@ module.exports = {
 										name: `Twitch miner output:`, value: output, inline: false,
 									},
 								])
-								.setTimestamp()
-								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+								.setTimestamp();
 						}
 						if (mode) {
 							var cont = running ? cont = "Twitch miner is running!" : "Starting up...";

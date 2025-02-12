@@ -35,8 +35,7 @@ module.exports = {
 				const vlready = splitLines(victlist, 1020) ?? [];
 				embed.setTitle(doc.tmusername + "'s miner")
 					.setDescription("The list of streamers your miner mines on:")
-					.setTimestamp()
-					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+					.setTimestamp();
 
 				for (let i = 0; i < vlready.length; i++) {
 					embed.addFields([{

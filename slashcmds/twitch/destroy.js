@@ -25,8 +25,7 @@ module.exports = {
 				.setColor('074e3e')
 				.setTitle(docs[0].tmusername + "'s miner")
 				.setDescription("Miner destroyed successfully.")
-				.setTimestamp()
-				.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+				.setTimestamp();
 			interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 		});
 	},

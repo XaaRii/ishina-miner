@@ -23,8 +23,7 @@ module.exports = {
 						else embed.setDescription("Twitch miner is not running.");
 						embed.setColor('e82e2e')
 							.setTitle(docs[0].tmusername + "'s miner")
-							.setTimestamp()
-							.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+							.setTimestamp();
 						if (i < 1) viewMsg = await interaction.editReply({ embeds: [embed] }).catch(er => { interaction.editReply({ content: "something fucked up, " + er }); });
 						else viewMsg.edit({ embeds: [embed] }).catch(er => { interaction.editReply({ content: "something fucked up, " + er }); });
 						if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
@@ -41,8 +40,7 @@ module.exports = {
 										name: `Twitch miner output:`, value: oo, inline: false,
 									},
 								])
-								.setTimestamp()
-								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+								.setTimestamp();
 							interaction.editReply({ embeds: [embed] }).catch(er => console.log("something fucked up, " + er));
 							if (i < 5) { setTimeout(() => { return spectator((i + 1), viewMsg); }, 10000); }
 							else return;

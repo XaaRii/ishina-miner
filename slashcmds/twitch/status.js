@@ -21,8 +21,7 @@ module.exports = {
 				}]);}
 
 				embed.setTitle(docs[0].tmusername + "'s miner")
-					.setTimestamp()
-					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+					.setTimestamp();
 				return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 			});
 		});

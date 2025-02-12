@@ -26,13 +26,11 @@ module.exports = {
 		}
 		embed.setTitle("Current Twitch Prime offers:")
 			.setColor("ffca2b")
-			.setTimestamp()
-			.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+			.setTimestamp();
 		if (backupUsed) {
 			embedBackup.setTitle("More than 25 games - splitted into two embeds")
 				.setColor("ffca2b")
-				.setTimestamp()
-				.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+				.setTimestamp();
 			return interaction.reply({ embeds: [embed, embedBackup] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 		} else return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 	},

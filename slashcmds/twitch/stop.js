@@ -31,8 +31,7 @@ module.exports = {
 								// process stopped, yaay
 								embed.setDescription("Twitch miner closed successfully.")
 									.setTitle(docs[0].tmusername + "'s miner")
-									.setTimestamp()
-									.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+									.setTimestamp();
 								interaction.editReply({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
 								docsUpdate(false);
 							} else {

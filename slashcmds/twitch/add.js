@@ -56,8 +56,7 @@ module.exports = {
 			function sendmessage() {
 				embed.setTitle(docs[0].tmusername + "'s miner")
 					.setDescription(description.join(""))
-					.setTimestamp()
-					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+					.setTimestamp();
 				return interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 			}
 		});

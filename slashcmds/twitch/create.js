@@ -43,8 +43,7 @@ module.exports = {
 							name: "And that's all!", value: "**__Other commands:__**\n`/twitch status` to check if it's running\n`/twitch start/stop/restart`\n`/twitch add/remove/list` for editing where you want to mine\n", inline: false,
 						},
 					])
-					.setTimestamp()
-					.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+					.setTimestamp();
 				interaction.reply({ embeds: [embed] }).catch(e => { interaction.reply({ content: "something fucked up, " + e }); });
 			});
 		});

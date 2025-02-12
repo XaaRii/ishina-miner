@@ -130,8 +130,7 @@ module.exports = {
 								.setFields([{
 									name: "Logged in successfully!", value: "Authorization complete, your miner will now start.", inline: false,
 								}])
-								.setTimestamp()
-								.setFooter({ text: `Need help? type ${prefix}help (command)!` });
+								.setTimestamp();
 							return interaction.followUp({ embeds: [embed] }).catch(e => { interaction.editReply({ content: "something fucked up, " + e }); });
 						}
 					//	if (stdout.includes("Invalid Login") || stdout.includes("Invalid two factor")) {
