@@ -376,21 +376,22 @@ async function manageScrapeData(filename) {
 				// headers = ["image"];
 				// diff = await processCSV(filename, headers, "image");
 
+				const filter = (x) => x.getAttribute('data-src') !== undefined ? x.getAttribute('data-src') : x.getAttribute('src');
 				// load results
 				const data = fs.readFileSync(`./checkers/${filename}`, 'utf8'),
 					root = HTMLParser.parse(data),
 					entryContent = root.querySelector('.entry-content'),
-					images = entryContent.querySelectorAll('img').map(x => x.getAttribute('data-src'));
+					images = entryContent.querySelectorAll('img').map(filter);
 
 				// compare with old results
 				if (fs.existsSync(`./checkers/${filename}.old`)) {
 					const oldData = fs.readFileSync(`./checkers/${filename}.old`, 'utf8'),
 					oldRoot = HTMLParser.parse(oldData),
 					oldEntryContent = oldRoot.querySelector('.entry-content'),
-					oldimages = oldEntryContent.querySelectorAll('img').map(x => x.getAttribute('data-src'));
+					oldimages = oldEntryContent.querySelectorAll('img').map(filter);
 					
 					diff = images.filter((el) => !oldimages.includes(el));
-					console.log("hs diff", images.length);
+					console.log("hs diff", diff);
 				} else diff = images;
 
 				let attas = [];
