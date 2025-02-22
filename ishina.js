@@ -379,19 +379,26 @@ async function manageScrapeData(filename) {
 				const filter = (x) => x.getAttribute('data-src') !== undefined ? x.getAttribute('data-src') : x.getAttribute('src');
 				// load results
 				const data = fs.readFileSync(`./checkers/${filename}`, 'utf8'),
-					root = HTMLParser.parse(data),
+					[website, ...rest] = data.split('PAWELESPLITTERS'), // pop first line into a variable
+					root = HTMLParser.parse(rest),
 					entryContent = root.querySelector('.entry-content'),
 					images = entryContent.querySelectorAll('img').map(filter);
 
 				// compare with old results
 				if (fs.existsSync(`./checkers/${filename}.old`)) {
 					const oldData = fs.readFileSync(`./checkers/${filename}.old`, 'utf8'),
-					oldRoot = HTMLParser.parse(oldData),
+					[oldWebsite, ...oldRest] = oldData.split('PAWELESPLITTERS'),
+					oldRoot = HTMLParser.parse(oldRest),
 					oldEntryContent = oldRoot.querySelector('.entry-content'),
 					oldimages = oldEntryContent.querySelectorAll('img').map(filter);
 					
-					diff = images.filter((el) => !oldimages.includes(el));
-					console.log("hs diff", diff);
+					if (website !== oldWebsite) {
+						diff = 9;
+						console.log("hs diff yes");
+					} else {
+						diff = images.filter((el) => !oldimages.includes(el));
+						console.log("hs diff shouldn't.", diff);
+					}
 				} else diff = images;
 
 				let attas = [];
@@ -402,7 +409,7 @@ async function manageScrapeData(filename) {
 				while (attas.length > 0) {
 					msg.push({ content: "", files: attas.splice(0, 10) });
 				}
-				if (msg[0]) msg[0].content = "New Hearthstone shop rotation!";
+				if (msg[0]) msg[0].content = `New Hearthstone shop rotation! *[article link here](<${website}>)*`;
 				break;
 
 			default:
