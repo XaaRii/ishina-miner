@@ -409,7 +409,7 @@ async function manageScrapeData(filename) {
 				while (attas.length > 0) {
 					msg.push({ content: "", files: attas.splice(0, 10) });
 				}
-				if (msg[0]) msg[0].content = `New Hearthstone shop rotation! *[article link here](<${website}>)*`;
+				if (msg[0]) msg[0].content = `New Hearthstone shop rotation! *[article link here](<${website.trim()}>)*`;
 				break;
 
 			default:
